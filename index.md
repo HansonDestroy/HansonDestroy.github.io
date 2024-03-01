@@ -1,5 +1,6 @@
 # CS 30 Demos
 ## Demos
-  - [traffic](trafficlight)
+  - [traffic](traffic light)
 
 ## Projects
+  - [Interactive scene](scene)
