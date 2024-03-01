@@ -1,3 +1,5 @@
-# my comp
-## lol
-  - [hi](https://wmcicompsci.ca/
+# CS 30 Demos
+## Demos
+  - [traffic](trafficlight)
+
+## Projects
