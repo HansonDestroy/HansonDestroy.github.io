@@ -12,51 +12,46 @@ let JP = [];
 let communityCards = [];
 function setup() {
   createCanvas(400, 400);
-
   for (i = 0; i < 10000; i++) {
     dealHand();
     winner();
   }
 }
-
 function draw() {}
-
 function winner() {
   JP = concat(JP, communityCards);
   computer = concat(computer, communityCards);
-
-  let cardValueArray = []
-  
+  if (cardValue(combination(JP)) > 7 || cardValue(combination(computer)) > 7) {
+    print(combination(JP), combination(computer));
+  }
+}
+function combination(Player) {
   let value = 0;
   let bestHand = [];
-  
+  let cardValueArray = [];
   // combination of 7 cards chose 2
   for (let i = 0; i < 7; i++) {
     for (let j = i + 1; j < 7; j++) {
+      // load every card other than i and j
       for (let newCard = 0; newCard < 7; newCard++) {
         if (newCard !== i && newCard !== j) {
-          append(cardValueArray, JP[newCard]);
+          append(cardValueArray, Player[newCard]);
         }
       }
-      
+      // check if this is able to be the new best hand
       if (cardValue(cardValueArray) > value) {
-        value = cardValue(cardValueArray)
-        bestHand = cardValueArray
+        value = cardValue(cardValueArray);
+        bestHand = cardValueArray;
+      } else if (cardValue(cardValueArray) === value) {
+        if (tieBreaker(value, cardValueArray, bestHand) === "array1")
+          bestHand = cardValueArray;
       }
-      else if(cardValue(cardValueArray) === value){
-          if (tieBreaker(value,cardValueArray,bestHand) === "array1")
-            bestHand = cardValueArray
-      }      
+      // cardValueArray ready to be loaded again
       cardValueArray = [];
     }
   }
-
-  if (cardValue(bestHand) > 7){
-    print(bestHand,JP)
-  }
-
+  return bestHand;
 }
-
 function cardValue(cardValueArray) {
   let value = 0;
   let redundantArray = redundantNumbers(cardValueArray);
@@ -133,120 +128,123 @@ function cardValue(cardValueArray) {
   }
   return value;
 }
-function tieBreaker(value,array1,array2){
+function tieBreaker(value, array1, array2) {
   let array1Number = sort(getNumber(array1));
   let array2Number = sort(getNumber(array2));
-  let array1Redundant = checkRedundancy(array1Number)
-  let array2Redundant = checkRedundancy(array2Number)
-  
-  if (value === 10){
+  let array1Redundant = checkRedundancy(array1Number);
+  let array2Redundant = checkRedundancy(array2Number);
+
+  if (value === 10) {
     return "chop";
-  }
-  else if (value === 9){
-    if (array1Number[0] === 1 && array1Number[0] === 10){
-      return "array1"
+  } else if (value === 9 || 5) {
+    if (array1Number[0] === 1 && array1Number[0] === 10) {
+      return "array1";
+    } else if (array2Number[0] === 1 && array2Number[0] === 10) {
+      return "array2";
+    } else if (array1Number[0] > array2Number[0]) {
+      return "array1";
+    } else if (array1Number[0] < array2Number[0]) {
+      return "array2";
+    } else {
+      return "chop";
     }
-    else if (array2Number[0] === 1 && array2Number[0] === 10){
-      return "array2"
-    }
-    else if (array1Number[0] > array2Number[0]){
-      return "array1"
-    }
-    else if (array1Number[0] < array2Number[0]){
-      return "array2"
-    }
-    else{
-      print("chop")
-    }
-  }
-  else if (value === 8){
-    let array1Quad = 0
-    let array1Kiker = 0
-    let array2Quad = 0
-    let array2Kiker = 0
-    
-    for (let i = 0; i < 5; i++){
-      if (array1Redundant[i] === 1){
-        array1Kiker = array1Number[i]
+  } else if (value === 8) {
+    let array1Quad = 0;
+    let array1Kiker = 0;
+    let array2Quad = 0;
+    let array2Kiker = 0;
+
+    for (let i = 0; i < 5; i++) {
+      if (array1Redundant[i] === 1) {
+        array1Kiker = array1Number[i];
+      } else {
+        array1Quad = array1Number[i];
       }
-      else{
-        array1Quad = array1Number[i]
-      }
-      if (array2Redundant[i] === 1){
-        array2Kiker = array2Number[i]
-      }
-      else{
-        array2Quad = array2Number[i]
+      if (array2Redundant[i] === 1) {
+        array2Kiker = array2Number[i];
+      } else {
+        array2Quad = array2Number[i];
       }
     }
-    
+
     if (array1Quad === array2Quad)
-      if (array1Kiker === array2Kiker){
-        return "chop"
-      }
-      else if (array1Kiker === 1){
-        return "array1"
-      }
-      else if (array2Kiker === 1){
-        return "array2"
-      }
-      else if (array1Kiker > array2Kiker){
+      if (array1Kiker === array2Kiker) {
+        return "chop";
+      } else if (array1Kiker === 1) {
         return "array1";
-      }
-      else{
+      } else if (array2Kiker === 1) {
+        return "array2";
+      } else if (array1Kiker > array2Kiker) {
+        return "array1";
+      } else {
         return "array2";
       }
-    else if (array1Quad === 1){
-      return "array1"
+    else if (array1Quad === 1) {
+      return "array1";
+    } else if (array2Quad === 1) {
+      return "array2";
+    } else if (array1Quad > array2Quad) {
+      return "array1";
+    } else {
+      return "array2";
     }
-    else if (array2Quad === 1){
-      return "array2"
+  } else if (value === 7) {
+    let array1Full = 0;
+    let array1Of = 0;
+    let array2Full = 0;
+    let array2Of = 0;
+
+    for (let i = 0; i < 5; i++) {
+      if (array1Redundant[i] === 2) {
+        array1Of = array1Number[i];
+      } else {
+        array1Full = array1Number[i];
+      }
+      if (array2Redundant[i] === 1) {
+        array2Of = array2Number[i];
+      } else {
+        array2Full = array2Number[i];
+      }
     }
-    else if (array1Quad > array2Quad){
-      return "array1"
+
+    if (array1Full === array2Full)
+      if (array2Of === array1Of) {
+        return "chop";
+      } else if (array1Of === 1) {
+        return "array1";
+      } else if (array2Of === 1) {
+        return "array2";
+      } else if (array1Of > array2Of) {
+        return "array1";
+      } else {
+        return "array2";
+      }
+    else if (array1Full === 1) {
+      return "array1";
+    } else if (array2Full === 1) {
+      return "array2";
+    } else if (array1Full > array2Full) {
+      return "array1";
+    } else {
+      return "array2";
     }
-    else{
-      return "array2"
+  } else if (value === 6 || 1) {
+    let array1High = sort(getNumber(array1));
+    let array2High = sort(getNumber(array2));
+    if (array1High[0] === 1 && array2High[0] !== 1) {
+      return "array1";
+    } else if (array1High[0] !== 1 && array2High[0] === 1) {
+      return "array2";
     }
+    for (let i = 4; i > -1; i--) {
+      if (array1High[i] > array2High[i]) {
+        return "array1";
+      } else if (array1High[i] < array2High[i]) {
+        return "array2";
+      }
+    }
+    return "chop";
   }
-  // else if (value === 7){
-  //   let array1Full = 0
-  //   let array1Of = 0
-  //   let array2Full = 0
-  //   let array2Of = 0
-    
-  //   for (let i = 0; i < 5; i++){
-  //     if (array1Redundant[i] === 2){
-  //       array1Of = array1Number[i]
-  //     }
-  //     else{
-  //       array1Full = array1Number[i]
-  //     }
-  //     if (array2Redundant[i] === 1){
-  //       array2Of = array2Number[i]
-  //     }
-  //     else{
-  //       array2Full = array2Number[i]
-  //     }
-  //   }
-    
-  //   if (array1Quad === array2Quad)
-  //     if (array1Kiker === array2Kiker){
-  //       return "chop"
-  //     }
-  //     else if (bestHandKiker > cardValueArrayKiker){
-  //       return "array1";
-  //     }
-  //     else{
-  //       return "array2";
-  //     }
-  //   else if (array1Quad > array2Quad){
-  //     return "array1"
-  //   }
-  //   else{
-  //     return "array2"
-  //   }
-  // }
 }
 function isStraight(array) {
   // get the numbers
