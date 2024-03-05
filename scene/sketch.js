@@ -200,7 +200,7 @@ function tieBreaker(value, array1, array2) {
       } else {
         array1Full = array1Number[i];
       }
-      if (array2Redundant[i] === 1) {
+      if (array2Redundant[i] === 2) {
         array2Of = array2Number[i];
       } else {
         array2Full = array2Number[i];
@@ -208,7 +208,7 @@ function tieBreaker(value, array1, array2) {
     }
 
     if (array1Full === array2Full)
-      if (array2Of === array1Of) {
+      if (array1Of === array2Of) {
         return "chop";
       } else if (array1Of === 1) {
         return "array1";
@@ -228,22 +228,42 @@ function tieBreaker(value, array1, array2) {
     } else {
       return "array2";
     }
-  } else if (value === 6 || 1) {
-    let array1High = sort(getNumber(array1));
-    let array2High = sort(getNumber(array2));
-    if (array1High[0] === 1 && array2High[0] !== 1) {
+  } else if (value === 6 || value === 1) {
+    if (array1Number[0] === 1 && array2Number[0] !== 1) {
       return "array1";
-    } else if (array1High[0] !== 1 && array2High[0] === 1) {
+    } else if (array1Number[0] !== 1 && array2Number[0] === 1) {
       return "array2";
     }
     for (let i = 4; i > -1; i--) {
-      if (array1High[i] > array2High[i]) {
+      if (array1Number[i] > array2Number[i]) {
         return "array1";
-      } else if (array1High[i] < array2High[i]) {
+      } else if (array1Number[i] < array2Number[i]) {
         return "array2";
       }
     }
     return "chop";
+  } else if (value === 4){
+    let array1Trips = 0;
+    let array2Trips = 0;
+    let array1HighKicker = 0;
+    let array1LowKicker = 14;
+    let array2HighKicker = 0;
+    let array2LowKicker = 14;
+
+    for (let i = 0; i < 5; i++) {
+      if (array1Redundant[i] === 3) {
+        array1Trips = array1Number[i];
+      } else {
+        array1HighKicker = max(array1HighKicker, array1Number[i]);
+        array1LowKicker = min(array1LowKicker, array1Number[i]);
+      }
+      if (array2Redundant[i] === 3) {
+        array2Trips = array2Number[i];
+      } else {
+        array2HighKicker = max(array2HighKicker, array2Number[i]);
+        array2LowKicker = min(array2LowKicker, array2Number[i]);
+      }
+    }
   }
 }
 function isStraight(array) {
@@ -350,4 +370,26 @@ function dealHand() {
   append(communityCards, dealCard());
   append(communityCards, dealCard());
   append(communityCards, dealCard());
+}
+function max(a,b){
+  if (a > b){
+    return a;
+  }
+  else if (b > a){
+    return b;
+  }
+  else{
+    return -1;
+  }
+}
+function min(a,b){
+  if (a > b){
+    return b;
+  }
+  else if (b > a){
+    return a;
+  }
+  else{
+    return -1;
+  }
 }
