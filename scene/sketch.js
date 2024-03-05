@@ -7,13 +7,16 @@
 
 let suit = ["s", "c", "d", "h"];
 let deck = [];
-let computer = [];
-let JP = [];
-let communityCards = [];
+// let computer = [];
+// let JP = [];
+// let communityCards = [];
+let computer = ["h3","c3"];
+let JP = ["h2","c2"];
+let communityCards = ["s1","h4","d13","s4","h1"];
 function setup() {
   createCanvas(400, 400);
-  for (i = 0; i < 10000; i++) {
-    dealHand();
+  for (let i = 0; i < 1; i++) {
+    // dealHand();
     winner();
   }
 }
@@ -21,9 +24,29 @@ function draw() {}
 function winner() {
   JP = concat(JP, communityCards);
   computer = concat(computer, communityCards);
-  if (cardValue(combination(JP)) > 7 || cardValue(combination(computer)) > 7) {
-    print(combination(JP), combination(computer));
+  let JPValue = cardValue(combination(JP));
+  let computerValue = cardValue(combination(computer));
+
+  if (JPValue > computerValue){
+    print("JPValue win");
   }
+  else if (JPValue < computerValue){
+    print("computerValue win");
+  }
+  else{
+    if (tieBreaker(JPValue, combination(JP), combination(computer)) === "array1"){
+      print("JP");
+    }
+    else if (tieBreaker(JPValue, combination(JP), combination(computer)) === "array2"){
+      print("computer");
+    }
+    else if (tieBreaker(JPValue, combination(JP), combination(computer)) === "chop"){
+      print("chop");
+    }
+  }
+  // if (cardValue(combination(JP)) > 0 || cardValue(combination(computer)) > 0) {
+  //   print(combination(JP), combination(computer));
+  // }
 }
 function combination(Player) {
   let value = 0;
@@ -42,9 +65,11 @@ function combination(Player) {
       if (cardValue(cardValueArray) > value) {
         value = cardValue(cardValueArray);
         bestHand = cardValueArray;
-      } else if (cardValue(cardValueArray) === value) {
-        if (tieBreaker(value, cardValueArray, bestHand) === "array1")
+      }
+      else if (cardValue(cardValueArray) === value) {
+        if (tieBreaker(value, cardValueArray, bestHand) === "array1"){
           bestHand = cardValueArray;
+        }
       }
       // cardValueArray ready to be loaded again
       cardValueArray = [];
@@ -59,11 +84,13 @@ function cardValue(cardValueArray) {
     if (isRoyalFlush(cardValueArray)) {
       //print("royal flush");
       value = 10;
-    } else {
+    }
+    else {
       //print("straight flush");
       value = 9;
     }
-  } else {
+  }
+  else {
     if (
       redundantArray[0] === 1 &&
       redundantArray[1] === 4 &&
@@ -73,22 +100,26 @@ function cardValue(cardValueArray) {
     ) {
       //print("four of a kind");
       value = 8;
-    } else if (
+    }
+    else if (
       redundantArray[0] === 2 &&
       redundantArray[1] === 2 &&
       redundantArray[2] === 3 &&
       redundantArray[3] === 3 &&
       redundantArray[4] === 3
-    ) {
+    ){
       //print("full house");
       value = 7;
-    } else if (isFlush(cardValueArray)) {
+    }
+    else if (isFlush(cardValueArray)) {
       //print("flush");
       value = 6;
-    } else if (isStraight(cardValueArray)) {
+    }
+    else if (isStraight(cardValueArray)) {
       //print("straight");
       value = 5;
-    } else if (
+    }
+    else if (
       redundantArray[0] === 1 &&
       redundantArray[1] === 1 &&
       redundantArray[2] === 3 &&
@@ -97,7 +128,8 @@ function cardValue(cardValueArray) {
     ) {
       //print("three of a kind");
       value = 4;
-    } else if (
+    }
+    else if (
       redundantArray[0] === 1 &&
       redundantArray[1] === 2 &&
       redundantArray[2] === 2 &&
@@ -106,7 +138,8 @@ function cardValue(cardValueArray) {
     ) {
       //print("two pair");
       value = 3;
-    } else if (
+    }
+    else if (
       redundantArray[0] === 1 &&
       redundantArray[1] === 1 &&
       redundantArray[2] === 1 &&
@@ -115,7 +148,8 @@ function cardValue(cardValueArray) {
     ) {
       //print("pair");
       value = 2;
-    } else if (
+    }
+    else if (
       redundantArray[0] === 1 &&
       redundantArray[1] === 1 &&
       redundantArray[2] === 1 &&
@@ -136,19 +170,25 @@ function tieBreaker(value, array1, array2) {
 
   if (value === 10) {
     return "chop";
-  } else if (value === 9 || 5) {
+  }
+  else if (value === 9 || value === 5) {
     if (array1Number[0] === 1 && array1Number[0] === 10) {
       return "array1";
-    } else if (array2Number[0] === 1 && array2Number[0] === 10) {
+    }
+    else if (array2Number[0] === 1 && array2Number[0] === 10) {
       return "array2";
-    } else if (array1Number[0] > array2Number[0]) {
+    }
+    else if (array1Number[0] > array2Number[0]) {
       return "array1";
-    } else if (array1Number[0] < array2Number[0]) {
+    }
+    else if (array1Number[0] < array2Number[0]) {
       return "array2";
-    } else {
+    }
+    else {
       return "chop";
     }
-  } else if (value === 8) {
+  }
+  else if (value === 8) {
     let array1Quad = 0;
     let array1Kiker = 0;
     let array2Quad = 0;
@@ -157,38 +197,49 @@ function tieBreaker(value, array1, array2) {
     for (let i = 0; i < 5; i++) {
       if (array1Redundant[i] === 1) {
         array1Kiker = array1Number[i];
-      } else {
+      }
+      else {
         array1Quad = array1Number[i];
       }
       if (array2Redundant[i] === 1) {
         array2Kiker = array2Number[i];
-      } else {
+      }
+      else {
         array2Quad = array2Number[i];
       }
     }
 
-    if (array1Quad === array2Quad)
+    if (array1Quad === array2Quad){
       if (array1Kiker === array2Kiker) {
         return "chop";
-      } else if (array1Kiker === 1) {
+      }
+      else if (array1Kiker === 1) {
         return "array1";
-      } else if (array2Kiker === 1) {
-        return "array2";
-      } else if (array1Kiker > array2Kiker) {
-        return "array1";
-      } else {
+      }
+      else if (array2Kiker === 1) {
         return "array2";
       }
+      else if (array1Kiker > array2Kiker) {
+        return "array1";
+      }
+      else {
+        return "array2";
+      }
+    }
     else if (array1Quad === 1) {
       return "array1";
-    } else if (array2Quad === 1) {
-      return "array2";
-    } else if (array1Quad > array2Quad) {
-      return "array1";
-    } else {
+    }
+    else if (array2Quad === 1) {
       return "array2";
     }
-  } else if (value === 7) {
+    else if (array1Quad > array2Quad) {
+      return "array1";
+    }
+    else {
+      return "array2";
+    }
+  }
+  else if (value === 7) {
     let array1Full = 0;
     let array1Of = 0;
     let array2Full = 0;
@@ -197,52 +248,66 @@ function tieBreaker(value, array1, array2) {
     for (let i = 0; i < 5; i++) {
       if (array1Redundant[i] === 2) {
         array1Of = array1Number[i];
-      } else {
+      }
+      else {
         array1Full = array1Number[i];
       }
       if (array2Redundant[i] === 2) {
         array2Of = array2Number[i];
-      } else {
+      }
+      else {
         array2Full = array2Number[i];
       }
     }
 
-    if (array1Full === array2Full)
+    if (array1Full === array2Full){
       if (array1Of === array2Of) {
         return "chop";
-      } else if (array1Of === 1) {
+      }
+      else if (array1Of === 1) {
         return "array1";
-      } else if (array2Of === 1) {
-        return "array2";
-      } else if (array1Of > array2Of) {
-        return "array1";
-      } else {
+      }
+      else if (array2Of === 1) {
         return "array2";
       }
+      else if (array1Of > array2Of) {
+        return "array1";
+      }
+      else {
+        return "array2";
+      }
+    }
     else if (array1Full === 1) {
       return "array1";
-    } else if (array2Full === 1) {
-      return "array2";
-    } else if (array1Full > array2Full) {
-      return "array1";
-    } else {
+    }
+    else if (array2Full === 1) {
       return "array2";
     }
-  } else if (value === 6 || value === 1) {
+    else if (array1Full > array2Full) {
+      return "array1";
+    }
+    else {
+      return "array2";
+    }
+  }
+  else if (value === 6 || value === 1) {
     if (array1Number[0] === 1 && array2Number[0] !== 1) {
       return "array1";
-    } else if (array1Number[0] !== 1 && array2Number[0] === 1) {
+    }
+    else if (array1Number[0] !== 1 && array2Number[0] === 1) {
       return "array2";
     }
     for (let i = 4; i > -1; i--) {
       if (array1Number[i] > array2Number[i]) {
         return "array1";
-      } else if (array1Number[i] < array2Number[i]) {
+      }
+      else if (array1Number[i] < array2Number[i]) {
         return "array2";
       }
     }
     return "chop";
-  } else if (value === 4){
+  }
+  else if (value === 4){
     let array1Trips = 0;
     let array2Trips = 0;
     let array1HighKicker = 0;
@@ -253,62 +318,65 @@ function tieBreaker(value, array1, array2) {
     for (let i = 0; i < 5; i++) {
       if (array1Redundant[i] === 3) {
         array1Trips = array1Number[i];
-      } else {
-        array1HighKicker = max(array1HighKicker, array1Number[i]);
-        array1LowKicker = min(array1LowKicker, array1Number[i]);
+      }
+      else {
+        array1HighKicker = maxi(array1HighKicker, array1Number[i]);
+        array1LowKicker = mini(array1LowKicker, array1Number[i]);
       }
       if (array2Redundant[i] === 3) {
         array2Trips = array2Number[i];
-      } else {
-        array2HighKicker = max(array2HighKicker, array2Number[i]);
-        array2LowKicker = min(array2LowKicker, array2Number[i]);
+      }
+      else {
+        array2HighKicker = maxi(array2HighKicker, array2Number[i]);
+        array2LowKicker = mini(array2LowKicker, array2Number[i]);
       }
     }
 
     if (array1Trips === 1 && array2Trips !== 1){
-      return "array1"
+      return "array1";
     }
     else if (array1Trips !== 1 && array2Trips === 1){
-      return "array2"
+      return "array2";
     }
     else if (array1Trips > array2Trips){
-      return "array1"
+      return "array1";
     }
     else if (array1Trips < array2Trips){
-      return "array2"
+      return "array2";
     }
     else{
       if (array1HighKicker === 1 && array2HighKicker !== 1){
-        return "array1"
+        return "array1";
       }
       else if (array1HighKicker !== 1 && array2HighKicker === 1){
-        return "array2"
+        return "array2";
       }
       else if (array1HighKicker > array2HighKicker){
-        return "array1"
+        return "array1";
       }
       else if (array1HighKicker < array2HighKicker){
-        return "array2"
+        return "array2";
       }
       else{
         if (array1LowKicker === 1 && array2LowKicker !== 1){
-          return "array1"
+          return "array1";
         }
         else if (array1LowKicker !== 1 && array2LowKicker === 1){
-          return "array2"
+          return "array2";
         }
         else if (array1LowKicker > array2LowKicker){
-          return "array1"
+          return "array1";
         }
         else if (array1LowKicker < array2LowKicker){
-          return "array2"
+          return "array2";
         }
         else{
-          return "chop"
+          return "chop";
         }
       }
     }
-  } else if (value === 3){
+  }
+  else if (value === 3){
     let array1Kicker = 0;
     let array2Kicker = 0;
     let array1HigPair = 0;
@@ -319,62 +387,65 @@ function tieBreaker(value, array1, array2) {
     for (let i = 0; i < 5; i++) {
       if (array1Redundant[i] === 1) {
         array1Kicker = array1Number[i];
-      } else {
-        array1HigPair = max(array1HigPair, array1Number[i]);
-        array1LowPair = min(array1LowPair, array1Number[i]);
+      }
+      else {
+        array1HigPair = maxi(array1HigPair, array1Number[i]);
+        array1LowPair = mini(array1LowPair, array1Number[i]);
       }
       if (array2Redundant[i] === 3) {
         array2Kicker = array2Number[i];
-      } else {
-        array2HigPair = max(array2HigPair, array2Number[i]);
-        array2LowPair = min(array2LowPair, array2Number[i]);
+      }
+      else {
+        array2HigPair = maxi(array2HigPair, array2Number[i]);
+        array2LowPair = mini(array2LowPair, array2Number[i]);
       }
     }
 
     if (array1HigPair === 1 && array2HigPair !== 1){
-      return "array1"
+      return "array1";
     }
     else if (array1HigPair !== 1 && array2HigPair === 1){
-      return "array2"
+      return "array2";
     }
     else if (array1HigPair > array2HigPair){
-      return "array1"
+      return "array1";
     }
     else if (array1HigPair < array2HigPair){
-      return "array2"
+      return "array2";
     }
     else{
-      if (array1LowPair === 1 && array2HighKicker !== 1){
-        return "array1"
+      if (array1LowPair === 1 && array2LowPair !== 1){
+        return "array1";
       }
       else if (array1LowPair !== 1 && array2LowPair === 1){
-        return "array2"
+        return "array2";
       }
       else if (array1LowPair > array2LowPair){
-        return "array1"
+        return "array1";
       }
       else if (array1LowPair < array2LowPair){
-        return "array2"
+        return "array2";
       }
       else{
         if (array1Kicker === 1 && array2Kicker !== 1){
-          return "array1"
+          return "array1";
         }
         else if (array1Kicker !== 1 && array2Kicker === 1){
-          return "array2"
+          return "array2";
         }
         else if (array1Kicker > array2Kicker){
-          return "array1"
+          return "array1";
         }
         else if (array1Kicker < array2Kicker){
-          return "array2"
+          return "array2";
         }
         else{
-          return "chop"
+          return "chop";
         }
       }
     }
-  } else if (value === 2){
+  }
+  else if (value === 2){
     let array1Pair = 0;
     let array2Pair = 0;
 
@@ -388,28 +459,29 @@ function tieBreaker(value, array1, array2) {
     }
 
     if (array1Pair === 1 && array2Pair !== 1){
-      return "array1"
+      return "array1";
     }
     else if (array1Pair !== 1 && array2Pair === 1){
-      return "array2"
+      return "array2";
     }
     else if (array1Pair > array2Pair){
-      return "array1"
+      return "array1";
     }
     else if (array1Pair < array2Pair){
-      return "array2"
+      return "array2";
     }
     else{
       for (let i = 4; i > -1; i--) {
         if (array1Number[i] > array2Number[i]) {
           return "array1";
-        } else if (array1Number[i] < array2Number[i]) {
+        }
+        else if (array1Number[i] < array2Number[i]) {
           return "array2";
         }
       }
     }
 
-    return "chop"
+    return "chop";
   }
 }
 function isStraight(array) {
@@ -427,7 +499,8 @@ function isStraight(array) {
   ) {
     // broadway straight
     return true;
-  } else if (
+  }
+  else if (
     straightArray[0] + 4 === straightArray[4] &&
     straightArray[1] + 3 === straightArray[4] &&
     straightArray[2] + 2 === straightArray[4] &&
@@ -451,7 +524,7 @@ function isFlush(array) {
 }
 function isRoyalFlush(array) {
   // get the numbers
-  royalArray = getNumber(array);
+  let royalArray = getNumber(array);
   // sort the numbers
   royalArray = sort(royalArray);
   if (royalArray[0] === 1 && royalArray[1] === 10) {
@@ -517,7 +590,7 @@ function dealHand() {
   append(communityCards, dealCard());
   append(communityCards, dealCard());
 }
-function max(a,b){
+function maxi(a,b){
   if (a > b){
     return a;
   }
@@ -528,7 +601,7 @@ function max(a,b){
     return -1;
   }
 }
-function min(a,b){
+function mini(a,b){
   if (a > b){
     return b;
   }
