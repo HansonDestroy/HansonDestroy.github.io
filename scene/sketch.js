@@ -38,7 +38,7 @@ function winner() {
       print("JP");
     }
     else if (tieBreaker(JPValue, combination(JP), combination(computer)) === "array2"){
-      print("computer");
+      print("computer", combination(computer), combination(JP));
     }
     else if (tieBreaker(JPValue, combination(JP), combination(computer)) === "chop"){
       print("chop");
