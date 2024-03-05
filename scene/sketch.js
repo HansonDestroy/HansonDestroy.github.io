@@ -264,6 +264,152 @@ function tieBreaker(value, array1, array2) {
         array2LowKicker = min(array2LowKicker, array2Number[i]);
       }
     }
+
+    if (array1Trips === 1 && array2Trips !== 1){
+      return "array1"
+    }
+    else if (array1Trips !== 1 && array2Trips === 1){
+      return "array2"
+    }
+    else if (array1Trips > array2Trips){
+      return "array1"
+    }
+    else if (array1Trips < array2Trips){
+      return "array2"
+    }
+    else{
+      if (array1HighKicker === 1 && array2HighKicker !== 1){
+        return "array1"
+      }
+      else if (array1HighKicker !== 1 && array2HighKicker === 1){
+        return "array2"
+      }
+      else if (array1HighKicker > array2HighKicker){
+        return "array1"
+      }
+      else if (array1HighKicker < array2HighKicker){
+        return "array2"
+      }
+      else{
+        if (array1LowKicker === 1 && array2LowKicker !== 1){
+          return "array1"
+        }
+        else if (array1LowKicker !== 1 && array2LowKicker === 1){
+          return "array2"
+        }
+        else if (array1LowKicker > array2LowKicker){
+          return "array1"
+        }
+        else if (array1LowKicker < array2LowKicker){
+          return "array2"
+        }
+        else{
+          return "chop"
+        }
+      }
+    }
+  } else if (value === 3){
+    let array1Kicker = 0;
+    let array2Kicker = 0;
+    let array1HigPair = 0;
+    let array1LowPair = 14;
+    let array2HigPair = 0;
+    let array2LowPair = 14;
+
+    for (let i = 0; i < 5; i++) {
+      if (array1Redundant[i] === 1) {
+        array1Kicker = array1Number[i];
+      } else {
+        array1HigPair = max(array1HigPair, array1Number[i]);
+        array1LowPair = min(array1LowPair, array1Number[i]);
+      }
+      if (array2Redundant[i] === 3) {
+        array2Kicker = array2Number[i];
+      } else {
+        array2HigPair = max(array2HigPair, array2Number[i]);
+        array2LowPair = min(array2LowPair, array2Number[i]);
+      }
+    }
+
+    if (array1HigPair === 1 && array2HigPair !== 1){
+      return "array1"
+    }
+    else if (array1HigPair !== 1 && array2HigPair === 1){
+      return "array2"
+    }
+    else if (array1HigPair > array2HigPair){
+      return "array1"
+    }
+    else if (array1HigPair < array2HigPair){
+      return "array2"
+    }
+    else{
+      if (array1LowPair === 1 && array2HighKicker !== 1){
+        return "array1"
+      }
+      else if (array1LowPair !== 1 && array2LowPair === 1){
+        return "array2"
+      }
+      else if (array1LowPair > array2LowPair){
+        return "array1"
+      }
+      else if (array1LowPair < array2LowPair){
+        return "array2"
+      }
+      else{
+        if (array1Kicker === 1 && array2Kicker !== 1){
+          return "array1"
+        }
+        else if (array1Kicker !== 1 && array2Kicker === 1){
+          return "array2"
+        }
+        else if (array1Kicker > array2Kicker){
+          return "array1"
+        }
+        else if (array1Kicker < array2Kicker){
+          return "array2"
+        }
+        else{
+          return "chop"
+        }
+      }
+    }
+  } else if (value === 2){
+    let array1Pair = 0;
+    let array2Pair = 0;
+
+    for (let i = 0; i < 5; i++) {
+      if (array1Redundant[i] === 2) {
+        array1Pair = array1Number[i];
+      }
+      if (array2Redundant[i] === 2) {
+        array2Pair = array2Number[i];
+      }
+    }
+
+    if (array1Pair === 1 && array2Pair !== 1){
+      return "array1"
+    }
+    else if (array1Pair !== 1 && array2Pair === 1){
+      return "array2"
+    }
+    else if (array1Pair > array2Pair){
+      return "array1"
+    }
+    else if (array1Pair < array2Pair){
+      return "array2"
+    }
+    else{
+      for (let i = 4; i > -1; i--) {
+        if (array1Number[i] > array2Number[i]) {
+          return "array1";
+        } else if (array1Number[i] < array2Number[i]) {
+          return "array2";
+        }
+      }
+    }
+
+    return "chop"
   }
 }
 function isStraight(array) {
