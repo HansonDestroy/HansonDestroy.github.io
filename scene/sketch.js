@@ -17,7 +17,7 @@ let communityCards = ["s3", "s1", "h4", "s4", "s5"];
 function setup() {
   createCanvas(400, 400);
   for (let i = 0; i < 1; i++) {
-    // dealHand();
+    dealHand();
     winner();
   }
 }
