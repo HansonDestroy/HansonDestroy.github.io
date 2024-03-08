@@ -5,6 +5,7 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 // https://www.mypokercoaching.com/poker-hands-rankings/
+// 
 
 // note to myslef: optimization possiblities
 // broadway straight to replace royal flush function
@@ -19,6 +20,7 @@ let computer = [];
 let JP = [];
 let communityCards = [];
 let state = "start screen";
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   for (let i = 0; i < 1; i++) {
@@ -31,8 +33,8 @@ function draw() {
     background("black");
     showInstructions();
   }
-  else if (state === "bouncing ball") {
-    background(220);
+  else if (state === "calculator") {
+    background("white");
     // drawCircle();
     // moveCircle();
     // bounceOffWall();
@@ -534,8 +536,19 @@ function winner() {
 }
 
 function showInstructions() {
+  let Title = [0.25*width,0.25*height,0.5*width,0.25*height];
   fill("white");
-  textSize(12);
-  textAlign(CENTER, CENTER);
-  text("This is a texas poker calculator. You input your hand to calculate their probablity of winning your RANGE IS NOT CONSIDERED because unless specified every unkown card has equal probablitiy for cards remaining in the deck. If you do not know what is the ranking of each poker hand or how it breaks ties then go to this website which does exactly same as this one but probably more optimized", width/2, height/2);
+  rect(Title[0],Title[1],Title[2],Title[3]);
+  fill("black");
+  // for (let j = 0; j < 100; j++) {
+  //   fontSIZE
+  //   textWidth("Texas Hold'em Calculator.", width/2, height * 0.375);
+  // }
+
+
+
+  // textSize(4);
+  // text("This is a texas poker calculator. You input your hand to calculate their probablity of winning your RANGE IS NOT CONSIDERED because unless specified every unkown card has equal probablitiy for cards remaining in the deck. If you do not know what is the ranking of each poker hand or how it breaks ties then go to this website which does exactly same as this one but probably more optimized", width/2, height/2);
+  
+
 }
