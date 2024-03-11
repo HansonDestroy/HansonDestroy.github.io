@@ -20,9 +20,9 @@ let computer = [];
 let JP = [];
 let communityCards = [];
 let state = "start screen";
-
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  
   for (let i = 0; i < 1; i++) {
     dealHand();
     winner();
@@ -30,14 +30,11 @@ function setup() {
 }
 function draw() {
   if (state === "start screen") {
-    background("black");
+    background(0);
     showInstructions();
   }
   else if (state === "calculator") {
-    background("white");
-    // drawCircle();
-    // moveCircle();
-    // bounceOffWall();
+    displayCards();
   }
 }
 function winner() {
@@ -63,7 +60,8 @@ function winner() {
       print("chop");
     }
   }
-} function combination(Player) {
+}
+function combination(Player) {
   let value = 0;
   let bestHand = [];
   let cardValueArray = [];
@@ -90,7 +88,8 @@ function winner() {
     }
   }
   return bestHand;
-} function cardValue(cardValueArray) {
+}
+function cardValue(cardValueArray) {
   let value = 0;
   let redundantArray = redundantNumbers(cardValueArray);
   if (isStraight(cardValueArray) && isFlush(cardValueArray)) {
@@ -165,7 +164,8 @@ function winner() {
     }
   }
   return value;
-} function tieBreaker(value, array1, array2) {
+}
+function tieBreaker(value, array1, array2) {
   let array1Number = sort(getNumber(array1));
   let array2Number = sort(getNumber(array2));
   let array1Redundant = checkRedundancy(array1Number);
@@ -420,7 +420,8 @@ function winner() {
 
     return "chop";
   }
-} function isStraight(array) {
+}
+function isStraight(array) {
   // get the numbers
   let straightArray = getNumber(array);
   // sort the numbers
@@ -445,7 +446,8 @@ function winner() {
     return true;
   }
   return false;
-} function isFlush(array) {
+}
+function isFlush(array) {
   if (
     array[0][0] === array[1][0] &&
     array[0][0] === array[2][0] &&
@@ -455,7 +457,8 @@ function winner() {
     return true;
   }
   return false;
-} function isRoyalFlush(array) {
+}
+function isRoyalFlush(array) {
   // get the numbers
   let royalArray = getNumber(array);
   // sort the numbers
@@ -464,12 +467,14 @@ function winner() {
     return true;
   }
   return false;
-} function redundantNumbers(array) {
+}
+function redundantNumbers(array) {
   let redundantArray = getNumber(array);
   redundantArray = checkRedundancy(redundantArray);
   redundantArray = sort(redundantArray);
   return redundantArray;
-} function checkRedundancy(array) {
+}
+function checkRedundancy(array) {
   let redundantArray = [0, 0, 0, 0, 0];
   for (let i = 0; i < 5; i++) {
     for (let j = 0; j < 5; j++) {
@@ -479,7 +484,8 @@ function winner() {
     }
   }
   return redundantArray;
-} function getNumber(array) {
+}
+function getNumber(array) {
   array = [
     parseInt(array[0].slice(1)),
     parseInt(array[1].slice(1)),
@@ -488,11 +494,13 @@ function winner() {
     parseInt(array[4].slice(1)),
   ];
   return array;
-} function dealCard() {
+}
+function dealCard() {
   let firstCard = deck[deck.length - 1];
   deck = shorten(deck);
   return firstCard;
-} function dealHand() {
+}
+function dealHand() {
   // reset hands and deck
   deck = [];
   communityCards = [];
@@ -517,7 +525,8 @@ function winner() {
   append(communityCards, dealCard());
   append(communityCards, dealCard());
   append(communityCards, dealCard());
-} function maxi(a, b) {
+}
+function maxi(a, b) {
   if (a > b) {
     return a;
   } else if (b > a) {
@@ -525,7 +534,8 @@ function winner() {
   } else {
     return a;
   }
-} function mini(a, b) {
+}
+function mini(a, b) {
   if (a > b) {
     return b;
   } else if (b > a) {
@@ -535,20 +545,89 @@ function winner() {
   }
 }
 
-function showInstructions() {
-  let Title = [0.25*width,0.25*height,0.5*width,0.25*height];
+let generateCardsArray = [];
+
+function generateVisualCards(){
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 13; j++) {
+      append(generateCardsArray, [j,i,j/13*width,(0.5+i/8)*height,1/13*width,1/8*height])
+    }
+  }
+}
+
+function displayCards(){
+  generateVisualCards();
+  for (let i = 0; i < 52; i++){
+    fill("white");
+    rect(generateCardsArray[i][2], generateCardsArray[i][3],generateCardsArray[i][4],generateCardsArray[i][5]);
+    fill("black");
+    text(suit[generateCardsArray[i][1]],generateCardsArray[i][2]+0.5*generateCardsArray[i][4],generateCardsArray[i][3]+0.5*generateCardsArray[i][5]);
+    text(generateCardsArray[i][0],generateCardsArray[i][2],generateCardsArray[i][3]+20);
+  }
+}
+function mouseReleased() {
+  if (state === "start screen"){
+    state = "calculator";
+    textSize(25)
+  }
+  for (let i = 0; i < 52; i++){
+    if (i===144){
+      append(JP,1);
+    }
+  }
+
+}
+
+let TitleBox = [0.1,0.2,0.75,0.25];
+let instructioBox = [0.1,0.6,0.25,0.25];
+let playBox = [0.6,0.6,0.25,0.25];
+function showInstructions(){
+  let titleSize = 0;
   fill("white");
-  rect(Title[0],Title[1],Title[2],Title[3]);
-  fill("black");
-  // for (let j = 0; j < 100; j++) {
-  //   fontSIZE
-  //   textWidth("Texas Hold'em Calculator.", width/2, height * 0.375);
-  // }
+  for (let i = 0; i < 100; i++) {
+    textSize(i);
+    textAlign(CENTER, CENTER);
+    titleSize = textWidth("Texas Hold'em Calculator");
+    if (titleSize * 1.35 / width > TitleBox[2]){
+      break;
+    }
+  }
+  fill("white")
+  rect(TitleBox[0]*width, TitleBox[1]*height,TitleBox[2]*width,TitleBox[3]*height)
+  fill("black")
+  text("Texas Hold'em Calculator", TitleBox[0]*width + TitleBox[2]*width/2, TitleBox[1]*height + TitleBox[3]*height/2);
+  
+  let InstructionSize = 0;
+  fill("white");
+  for (let i = 0; i < 100; i++) {
+    textSize(i);
+    textAlign(CENTER, CENTER);
+    InstructionSize = textWidth("Instruction");
+    if (InstructionSize * 1.35 / width > instructioBox[2]){
+      break;
+    }
+  }
+  fill("white")
+  rect(instructioBox[0]*width, instructioBox[1]*height,instructioBox[2]*width,instructioBox[3]*height)
+  fill("black")
+  text("Instruction", instructioBox[0]*width + instructioBox[2]*width/2, instructioBox[1]*height + instructioBox[3]*height/2);
 
-
-
+  let playSize = 0;
+  fill("white");
+  for (let i = 0; i < 100; i++) {
+    textSize(i);
+    textAlign(CENTER, CENTER);
+    playSize = textWidth("Play");
+    if (playSize * 1.35 / width > playBox[2]){
+      break;
+    }
+  }
+  fill("white")
+  rect(playBox[0]*width, playBox[1]*height,playBox[2]*width,playBox[3]*height)
+  fill("black")
+  text("Play", playBox[0]*width + playBox[2]*width/2, playBox[1]*height + playBox[3]*height/2);
+  // rect(instructionButton[0],instructionButton[1],instructionButton[2],instructionButton[3]);  
   // textSize(4);
   // text("This is a texas poker calculator. You input your hand to calculate their probablity of winning your RANGE IS NOT CONSIDERED because unless specified every unkown card has equal probablitiy for cards remaining in the deck. If you do not know what is the ranking of each poker hand or how it breaks ties then go to this website which does exactly same as this one but probably more optimized", width/2, height/2);
-  
 
 }
