@@ -561,8 +561,8 @@ function displayCards(){
     fill("white");
     rect(generateCardsArray[i][2], generateCardsArray[i][3],generateCardsArray[i][4],generateCardsArray[i][5]);
     fill("black");
-    text(suit[generateCardsArray[i][1]],generateCardsArray[i][2]+0.5*generateCardsArray[i][4],generateCardsArray[i][3]+0.5*generateCardsArray[i][5]);
-    text(generateCardsArray[i][0],generateCardsArray[i][2],generateCardsArray[i][3]+20);
+
+    text(suit[generateCardsArray[i][1]] + (generateCardsArray[i][0]+1),generateCardsArray[i][2]+0.5*generateCardsArray[i][4],generateCardsArray[i][3]+0.5*generateCardsArray[i][5]);
   }
 }
 function mouseReleased() {
