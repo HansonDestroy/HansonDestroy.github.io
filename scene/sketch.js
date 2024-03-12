@@ -4,24 +4,65 @@
 //
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
-// https://www.mypokercoaching.com/poker-hands-rankings/
+// I programed the logic on which hand is better according to the rules
+// I made it pretty optimal speedwise eventhough there is room to improve (i ran out of time)
+
+// note to myslef: optimization possiblities
+// broadway straight to replace royal flush function
+// value == 1 before value == 10
+// ace redundancy function
+// combine value == 5 and 9 and 6 and 1. combine value == 8 and 7.
+// decrease the double checks on card value
 
 let suit = ["s", "c", "d", "h"];
 let deck = [];
-// let computer = [];
-// let JP = [];
-// let communityCards = [];
-let computer = ["h3", "c3"];
-let JP = ["h2", "c2"];
-let communityCards = ["s3", "s1", "h4", "s4", "s5"];
+let computer = [];
+let tempComputer = [];
+let computerCount = 0
+let JP = [];
+let tempJP = [];
+let JPCount = 0
+let communityCards = [];
+let tempcommunityCards = [];
+let tieCount = 0
+let removeCards = [];
+let simulationNumber = 0;
+let selectedPlace = "JP"
+let state = "start screen";
 function setup() {
-  createCanvas(400, 400);
-  for (let i = 0; i < 1; i++) {
-    dealHand();
-    winner();
+  createCanvas(windowWidth, windowHeight);
+  // for (let i = 0; i < 10; i++) {
+    // dealHand();
+  //   winner();
+  // }
+}
+function draw() {
+  if (state === "start screen") {
+    background(0);
+    showInstructions();
+  } else if (state === "calculator") {
+    displayCards();
+    tempComputer = structuredClone(computer)
+    tempJP = structuredClone(JP)
+    tempcommunityCards = structuredClone(communityCards)
+    for (let simulation = 0; simulation < simulationNumber; simulation++) {
+      for (let i = 0; i < 10; i++) {
+        dealHand();
+        winner();
+        computer = structuredClone(tempComputer)
+        JP = structuredClone(tempJP)
+        communityCards = structuredClone(tempcommunityCards)
+      }
+    }
+    fill("red")
+    text(floor(100*JPCount/(JPCount+computerCount+tieCount)) + "% jp win",100,200)
+    text(floor(100*computerCount/(JPCount+computerCount+tieCount)) + "% computer win",300,200)
+    text(floor(100*tieCount/(JPCount+computerCount+tieCount)) + "% tie (chop)",600,200)
+    text(JPCount + "times jp win",100,250)
+    text(computerCount + "times computer win",300,250)
+    text(tieCount + "times tie (chop)",600,250)
   }
 }
-function draw() {}
 function winner() {
   let JPBest = concat(JP, communityCards);
   JPBest = combination(JPBest);
@@ -32,24 +73,20 @@ function winner() {
   let computerValue = cardValue(computerBest);
 
   if (JPValue > computerValue) {
-    print("JP");
+    JPCount++;
   } else if (JPValue < computerValue) {
-    print("computer");
+    computerCount++
   } else {
     let tieIndiactor = tieBreaker(JPValue, JPBest, computerBest);
     if (tieIndiactor === "array1") {
-      print("JP");
+      JPCount++;
     } else if (tieIndiactor === "array2") {
-      print("computer");
+      computerCount++
     } else if (tieIndiactor === "chop") {
-      print("chop");
+      tieCount++;
     }
   }
-  // if (cardValue(combination(JP)) > 0 || cardValue(combination(computer)) > 0) {
-  //   print(combination(JP), combination(computer));
-  // }
-}
-function combination(Player) {
+} function combination(Player) {
   let value = 0;
   let bestHand = [];
   let cardValueArray = [];
@@ -76,8 +113,7 @@ function combination(Player) {
     }
   }
   return bestHand;
-}
-function cardValue(cardValueArray) {
+} function cardValue(cardValueArray) {
   let value = 0;
   let redundantArray = redundantNumbers(cardValueArray);
   if (isStraight(cardValueArray) && isFlush(cardValueArray)) {
@@ -152,8 +188,7 @@ function cardValue(cardValueArray) {
     }
   }
   return value;
-}
-function tieBreaker(value, array1, array2) {
+} function tieBreaker(value, array1, array2) {
   let array1Number = sort(getNumber(array1));
   let array2Number = sort(getNumber(array2));
   let array1Redundant = checkRedundancy(array1Number);
@@ -408,8 +443,7 @@ function tieBreaker(value, array1, array2) {
 
     return "chop";
   }
-}
-function isStraight(array) {
+} function isStraight(array) {
   // get the numbers
   let straightArray = getNumber(array);
   // sort the numbers
@@ -434,8 +468,7 @@ function isStraight(array) {
     return true;
   }
   return false;
-}
-function isFlush(array) {
+} function isFlush(array) {
   if (
     array[0][0] === array[1][0] &&
     array[0][0] === array[2][0] &&
@@ -445,8 +478,7 @@ function isFlush(array) {
     return true;
   }
   return false;
-}
-function isRoyalFlush(array) {
+} function isRoyalFlush(array) {
   // get the numbers
   let royalArray = getNumber(array);
   // sort the numbers
@@ -455,14 +487,12 @@ function isRoyalFlush(array) {
     return true;
   }
   return false;
-}
-function redundantNumbers(array) {
+} function redundantNumbers(array) {
   let redundantArray = getNumber(array);
   redundantArray = checkRedundancy(redundantArray);
   redundantArray = sort(redundantArray);
   return redundantArray;
-}
-function checkRedundancy(array) {
+} function checkRedundancy(array) {
   let redundantArray = [0, 0, 0, 0, 0];
   for (let i = 0; i < 5; i++) {
     for (let j = 0; j < 5; j++) {
@@ -472,8 +502,7 @@ function checkRedundancy(array) {
     }
   }
   return redundantArray;
-}
-function getNumber(array) {
+} function getNumber(array) {
   array = [
     parseInt(array[0].slice(1)),
     parseInt(array[1].slice(1)),
@@ -482,8 +511,7 @@ function getNumber(array) {
     parseInt(array[4].slice(1)),
   ];
   return array;
-}
-function dealCard() {
+} function dealCard() {
   let firstCard = deck[deck.length - 1];
   deck = shorten(deck);
   return firstCard;
@@ -491,28 +519,34 @@ function dealCard() {
 function dealHand() {
   // reset hands and deck
   deck = [];
-  communityCards = [];
-  computer = [];
-  JP = [];
   // get a full deck of cards
   for (let suits = 0; suits < 4; suits++) {
     for (let number = 1; number < 14; number++) {
       append(deck, suit[suits] + str(number));
+      // remove cards if it is aready drawn
+      for (let remove = 0; remove < removeCards.length; remove++){
+        if (removeCards[remove] === suit[suits] + str(number)){
+            shorten(deck)
+          }
+      }
     }
   }
+  
   // shuffle
   deck = shuffle(deck);
   // deal wholecards
-  append(computer, dealCard());
-  append(computer, dealCard());
-  append(JP, dealCard());
-  append(JP, dealCard());
-  // deal communityCards
-  append(communityCards, dealCard());
-  append(communityCards, dealCard());
-  append(communityCards, dealCard());
-  append(communityCards, dealCard());
-  append(communityCards, dealCard());
+  for (let i = 0; i < 5; i++){
+    if(computer.length < 2){
+      append(computer, dealCard());
+    }
+    if(JP.length < 2){
+      append(JP, dealCard());
+    }
+    // deal communityCards
+    if(communityCards.length < 5){
+      append(communityCards, dealCard());
+    }
+  }
 }
 function maxi(a, b) {
   if (a > b) {
@@ -522,8 +556,7 @@ function maxi(a, b) {
   } else {
     return a;
   }
-}
-function mini(a, b) {
+} function mini(a, b) {
   if (a > b) {
     return b;
   } else if (b > a) {
@@ -532,3 +565,215 @@ function mini(a, b) {
     return a;
   }
 }
+
+let generateCardsArray = [];
+function generateVisualCards() {
+  for (let i = 0; i < 4; i++) {
+    for (let j = 0; j < 13; j++) {
+      append(generateCardsArray, [
+        j,
+        i,
+        (j / 13) * width,
+        (0.5 + i / 8) * height,
+        (1 / 13) * width,
+        (1 / 8) * height,
+      ]);
+    }
+  }
+}
+function displayCards() {
+  background(255)
+  generateVisualCards();
+  for (let i = 0; i < 52; i++) {
+    fill("white");
+    rect(
+      generateCardsArray[i][2],
+      generateCardsArray[i][3],
+      generateCardsArray[i][4],
+      generateCardsArray[i][5]
+    );
+    fill("black");
+    text(
+      suit[generateCardsArray[i][1]] + (generateCardsArray[i][0] + 1),
+      generateCardsArray[i][2] + 0.5 * generateCardsArray[i][4],
+      generateCardsArray[i][3] + 0.5 * generateCardsArray[i][5]
+    );
+  }
+  text(JP[0]+JP[1],100,50)
+  text(computer[0]+computer[1],250,50)
+  text(communityCards[0]+communityCards[1]+communityCards[2]+communityCards[3]+communityCards[4],500,50)
+  // 
+  if (selectedPlace === "JP"){
+    fill("green")
+  }
+  else{
+    fill("grey")
+  }
+  rect(0,100,150,50)
+  fill("white")
+  text("select JP",75,125)
+  // 
+  if (selectedPlace === "computer"){
+    fill("green")
+  }
+  else{
+    fill("grey")
+  }
+  rect(150,100,250,50)
+  fill("white")
+  text("select computer",275,125)
+  // 
+  if (selectedPlace === "communityCards"){
+    fill("green")
+  }
+  else{
+    fill("grey")
+  }
+  rect(450,100,350,50)
+  fill("white")
+  text("select community cards",625,125)
+}
+function mousePressed() {
+  if (state === "start screen" && mouseX/width > playBox[0] && mouseX/width < playBox[0] + playBox[2] && mouseY/height > playBox[1] && mouseY/height < playBox[3] + playBox[1]) {
+    state = "calculator";
+    background(255);
+    textSize(25);
+  }
+  else if (state === "start screen" && mouseX/width > instructionBox[0] && mouseX/width < instructionBox[0] + instructionBox[2] && mouseY/height > instructionBox[1] && mouseY/height < instructionBox[3] + instructionBox[1]) {
+    print("hi")
+    background(155);
+    textSize(15);
+    text("This is a texas poker calculator. exact clone of https://www.pokernews.com/poker-tools/poker-odds-calculator.htm)",width/2,height/2);
+    text("click with your mouse in the select JP, select computer, or select community cards box then click the cards on the bottom to add them to the hands",width/2,height/2-50);
+    text("Type a to simulate 10 hands at the same time. b for 100 c for 1000 d for 10000 e for 100000 f for 1000000",width/2,height/2-100);
+    text("s h c h stands for spades hearts clubs hearts",width/2,height/2-150);
+    state = "instruction"
+  }
+  else if (state === "calculator"){
+    for (let i = 0; i < 4; i++) {
+      for (let j = 0; j < 13; j++) {
+        if (mouseX > j*width/13 && mouseX < (j+1)*width/13 && mouseY > (4+i)*height/8 && mouseY < (4+i+1)*height/8) {
+          if (selectedPlace === "JP" && JP.length < 2){
+            append(JP, suit[i] + (j+1))
+            append(removeCards, suit[i] + (j+1));
+          }
+          else if (selectedPlace === "computer" && computer.length < 2){
+            append(computer, suit[i] + (j+1))
+            append(removeCards, suit[i] + (j+1));
+          }
+          else if (selectedPlace === "communityCards" && communityCards.length < 5){
+            append(communityCards, suit[i] + (j+1))
+            append(removeCards, suit[i] + (j+1));
+          }
+        }
+      }
+    }
+    if (mouseX > 0 && mouseX < 150 && mouseY > 100 && mouseY < 150){
+      selectedPlace = "JP"
+    }
+    else if (mouseX > 150 && mouseX < 400 && mouseY > 100 && mouseY < 150){
+      selectedPlace = "computer"
+    }
+    else if (mouseX > 450 && mouseX < 800 && mouseY > 100 && mouseY < 150){
+      selectedPlace = "communityCards"
+    }
+  }  
+}
+
+function keyTyped(){
+  if (key === "a"){
+    simulationNumber = 10
+  }
+  if (key === "b"){
+    simulationNumber = 100
+  }
+  if (key === "c"){
+    simulationNumber = 1000
+  }
+  if (key === "d"){
+    simulationNumber = 10000
+  }
+  if (key === "e"){
+    simulationNumber = 100000
+  }
+  if (key === "f"){
+    simulationNumber = 1000000
+  }
+}
+
+let TitleBox = [0.1, 0.2, 0.75, 0.25];
+let instructionBox = [0.1, 0.6, 0.25, 0.25];
+let playBox = [0.6, 0.6, 0.25, 0.25];
+function showInstructions() {
+  let titleSize = 0;
+  fill("white");
+  for (let i = 0; i < 100; i++) {
+    textSize(i);
+    textAlign(CENTER, CENTER);
+    titleSize = textWidth("Texas Hold'em Calculator");
+    if ((titleSize * 1.35) / width > TitleBox[2]) {
+      break;
+    }
+  }
+  fill("white");
+  rect(
+    TitleBox[0] * width,
+    TitleBox[1] * height,
+    TitleBox[2] * width,
+    TitleBox[3] * height
+  );
+  fill("black");
+  text(
+    "Texas Hold'em Calculator",
+    TitleBox[0] * width + (TitleBox[2] * width) / 2,
+    TitleBox[1] * height + (TitleBox[3] * height) / 2
+  );
+
+  let InstructionSize = 0;
+  fill("white");
+  for (let i = 0; i < 100; i++) {
+    textSize(i);
+    textAlign(CENTER, CENTER);
+    InstructionSize = textWidth("Instruction");
+    if ((InstructionSize * 1.35) / width > instructionBox[2]) {
+      break;
+    }
+  }
+  fill("white");
+  rect(
+    instructionBox[0] * width,
+    instructionBox[1] * height,
+    instructionBox[2] * width,
+    instructionBox[3] * height
+  );
+  fill("black");
+  text(
+    "Instruction",
+    instructionBox[0] * width + (instructionBox[2] * width) / 2,
+    instructionBox[1] * height + (instructionBox[3] * height) / 2
+  );
+
+  let playSize = 0;
+  fill("white");
+  for (let i = 0; i < 100; i++) {
+    textSize(i);
+    textAlign(CENTER, CENTER);
+    playSize = textWidth("Play");
+    if ((playSize * 1.35) / width > playBox[2]) {
+      break;
+    }
+  }
+  fill("white");
+  rect(
+    playBox[0] * width,
+    playBox[1] * height,
+    playBox[2] * width,
+    playBox[3] * height
+  );
+  fill("black");
+  text(
+    "Play",
+    playBox[0] * width + (playBox[2] * width) / 2,
+    playBox[1] * height + (playBox[3] * height) / 2
+  );
+  }
