@@ -6,6 +6,8 @@
 // - describe what you did to take this project "above and beyond"
 // I programed the logic on which hand is better according to the rules
 // I made it pretty optimal speedwise eventhough there is room to improve (i ran out of time)
+// adjust to the size of the window and easily customizable
+// 
 
 // note to myslef: optimization possiblities
 // broadway straight to replace royal flush function
@@ -58,9 +60,9 @@ function draw() {
     text(floor(100*JPCount/(JPCount+computerCount+tieCount)) + "% jp win",100,200)
     text(floor(100*computerCount/(JPCount+computerCount+tieCount)) + "% computer win",300,200)
     text(floor(100*tieCount/(JPCount+computerCount+tieCount)) + "% tie (chop)",600,200)
-    text(JPCount + "times jp win",100,250)
-    text(computerCount + "times computer win",300,250)
-    text(tieCount + "times tie (chop)",600,250)
+    text(JPCount + "times",100,250)
+    text(computerCount + "times",300,250)
+    text(tieCount + "times",600,250)
   }
 }
 function winner() {
