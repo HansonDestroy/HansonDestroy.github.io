@@ -20,21 +20,21 @@ let suit = ["s", "c", "d", "h"];
 let deck = [];
 let computer = [];
 let tempComputer = [];
-let computerCount = 0
+let computerCount = 0;
 let JP = [];
 let tempJP = [];
-let JPCount = 0
+let JPCount = 0;
 let communityCards = [];
 let tempcommunityCards = [];
-let tieCount = 0
+let tieCount = 0;
 let removeCards = [];
 let simulationNumber = 0;
-let selectedPlace = "JP"
+let selectedPlace = "JP";
 let state = "start screen";
 function setup() {
   createCanvas(windowWidth, windowHeight);
   // for (let i = 0; i < 10; i++) {
-    // dealHand();
+  // dealHand();
   //   winner();
   // }
 }
@@ -44,25 +44,25 @@ function draw() {
     showInstructions();
   } else if (state === "calculator") {
     displayCards();
-    tempComputer = structuredClone(computer)
-    tempJP = structuredClone(JP)
-    tempcommunityCards = structuredClone(communityCards)
+    tempComputer = structuredClone(computer);
+    tempJP = structuredClone(JP);
+    tempcommunityCards = structuredClone(communityCards);
     for (let simulation = 0; simulation < simulationNumber; simulation++) {
       for (let i = 0; i < 10; i++) {
         dealHand();
         winner();
-        computer = structuredClone(tempComputer)
-        JP = structuredClone(tempJP)
-        communityCards = structuredClone(tempcommunityCards)
+        computer = structuredClone(tempComputer);
+        JP = structuredClone(tempJP);
+        communityCards = structuredClone(tempcommunityCards);
       }
     }
     fill("red")
     text(floor(100*JPCount/(JPCount+computerCount+tieCount)) + "% jp win",100,200)
     text(floor(100*computerCount/(JPCount+computerCount+tieCount)) + "% computer win",300,200)
     text(floor(100*tieCount/(JPCount+computerCount+tieCount)) + "% tie (chop)",600,200)
-    text(JPCount + "times",100,250)
-    text(computerCount + "times",300,250)
-    text(tieCount + "times",600,250)
+    text(JPCount + "times",100,250);
+    text(computerCount + "times",300,250);
+    text(tieCount + "times",600,250);
   }
 }
 function winner() {
@@ -77,13 +77,13 @@ function winner() {
   if (JPValue > computerValue) {
     JPCount++;
   } else if (JPValue < computerValue) {
-    computerCount++
+    computerCount++;
   } else {
     let tieIndiactor = tieBreaker(JPValue, JPBest, computerBest);
     if (tieIndiactor === "array1") {
       JPCount++;
     } else if (tieIndiactor === "array2") {
-      computerCount++
+      computerCount++;
     } else if (tieIndiactor === "chop") {
       tieCount++;
     }

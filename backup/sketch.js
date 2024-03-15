@@ -24,7 +24,7 @@ let tempcommunityCards = [];
 let tieCount = 0;
 let removeCards = [];
 let simulationNumber = 0;
-let selectedPlace = "JP";
+let selectedPlace = "";
 let state = "start screen";
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -59,7 +59,7 @@ function setup() {
       200
     );
     text(
-      floor(10000 * tieCount) / 100/ (JPCount + computerCount + tieCount) +
+      floor(10000 * tieCount / 100 / (JPCount + computerCount + tieCount)) +
         "% tie (chop)",
       600,
       200
@@ -78,18 +78,20 @@ function setup() {
   let computerValue = cardValue(computerBest);
 
   if (JPValue > computerValue) {
-    JPCount++;
+    // JPCount++;
   }
-  if (JPValue < computerValue) {
-    computerCount++;
+  else if (JPValue < computerValue) {
+    // computerCount++;
   }
   else {
     let tieIndiactor = tieBreaker(JPValue, JPBest, computerBest);
     if (tieIndiactor === "array1") {
       JPCount++;
+      // tieCount++
     }
     if (tieIndiactor === "array2") {
       computerCount++;
+      // tieCount++
     }
     if (tieIndiactor === "chop") {
       tieCount++;
@@ -110,7 +112,7 @@ function setup() {
         }
       }
       // check if this is able to be the new best hand
-      newValue = cardValue(cardValueArray)
+      newValue = cardValue(cardValueArray);
       if (newValue > bestValue) {
         bestValue = newValue;
         bestHand = cardValueArray;
@@ -168,10 +170,10 @@ function setup() {
       //("pair");
       return 2;
     }
-    else{
-      //("high card");
-      return 1;
-    }
+    
+    //("high card");
+    return 1;
+    
   }
 } function tieBreaker(value, array1, array2) {
   let array1Number = sort(getNumber(array1));
@@ -220,13 +222,19 @@ function setup() {
     if (array1Pair < array2Pair) {
       return "array2";
     }
-    else {
-      for (let i = 4; i > -1; i--) {
-        if (array1Number[i] > array2Number[i]) {
-          return "array1";
-        } else if (array1Number[i] < array2Number[i]) {
-          return "array2";
-        }
+    if (array1Number[0] === 1 && array2Number[0] !== 1) {
+      return "array1";
+    }
+    if (array1Number[0] !== 1 && array2Number[0] === 1) {
+      return "array2";
+    }
+    for (let i = 4; i > -1; i--) {
+
+      if (array1Number[i] > array2Number[i]) {
+        return "array1";
+      }
+      if (array1Number[i] < array2Number[i]) {
+        return "array2";
       }
     }
 
@@ -260,39 +268,39 @@ function setup() {
     if (array1HigPair === 1 && array2HigPair !== 1) {
       return "array1";
     }
-    if (array1HigPair !== 1 && array2HigPair === 1) {
+    else if (array1HigPair !== 1 && array2HigPair === 1) {
       return "array2";
     }
-    if (array1HigPair > array2HigPair) {
+    else if (array1HigPair > array2HigPair) {
       return "array1";
     }
-    if (array1HigPair < array2HigPair) {
+    else if (array1HigPair < array2HigPair) {
       return "array2";
     }
     else {
       if (array1LowPair === 1 && array2LowPair !== 1) {
         return "array1";
       }
-      if (array1LowPair !== 1 && array2LowPair === 1) {
+      else if (array1LowPair !== 1 && array2LowPair === 1) {
         return "array2";
       }
-      if (array1LowPair > array2LowPair) {
+      else if (array1LowPair > array2LowPair) {
         return "array1";
       }
-      if (array1LowPair < array2LowPair) {
+      else if (array1LowPair < array2LowPair) {
         return "array2";
       }
       else {
         if (array1Kicker === 1 && array2Kicker !== 1) {
           return "array1";
         }
-        if (array1Kicker !== 1 && array2Kicker === 1) {
+        else if (array1Kicker !== 1 && array2Kicker === 1) {
           return "array2";
         }
-        if (array1Kicker > array2Kicker) {
+        else if (array1Kicker > array2Kicker) {
           return "array1";
         }
-        if (array1Kicker < array2Kicker) {
+        else if (array1Kicker < array2Kicker) {
           return "array2";
         }
         else {
@@ -329,39 +337,39 @@ function setup() {
     if (array1Trips === 1 && array2Trips !== 1) {
       return "array1";
     }
-    if (array1Trips !== 1 && array2Trips === 1) {
+    else if (array1Trips !== 1 && array2Trips === 1) {
       return "array2";
     }
-    if (array1Trips > array2Trips) {
+    else if (array1Trips > array2Trips) {
       return "array1";
     }
-    if (array1Trips < array2Trips) {
+    else if (array1Trips < array2Trips) {
       return "array2";
     }
     else {
       if (array1HighKicker === 1 && array2HighKicker !== 1) {
         return "array1";
       }
-      if (array1HighKicker !== 1 && array2HighKicker === 1) {
+      else if (array1HighKicker !== 1 && array2HighKicker === 1) {
         return "array2";
       }
-      if (array1HighKicker > array2HighKicker) {
+      else if (array1HighKicker > array2HighKicker) {
         return "array1";
       }
-      if (array1HighKicker < array2HighKicker) {
+      else if (array1HighKicker < array2HighKicker) {
         return "array2";
       }
       else {
         if (array1LowKicker === 1 && array2LowKicker !== 1) {
           return "array1";
         }
-        if (array1LowKicker !== 1 && array2LowKicker === 1) {
+        else if (array1LowKicker !== 1 && array2LowKicker === 1) {
           return "array2";
         }
-        if (array1LowKicker > array2LowKicker) {
+        else if (array1LowKicker > array2LowKicker) {
           return "array1";
         }
-        if (array1LowKicker < array2LowKicker) {
+        else if (array1LowKicker < array2LowKicker) {
           return "array2";
         }
         else {
@@ -374,13 +382,13 @@ function setup() {
     if (array1Number[0] === 1 && array1Number[0] === 10) {
       return "array1";
     }
-    if (array2Number[0] === 1 && array2Number[0] === 10) {
+    else if (array2Number[0] === 1 && array2Number[0] === 10) {
       return "array2";
     }
-    if (array1Number[0] > array2Number[0]) {
+    else if (array1Number[0] > array2Number[0]) {
       return "array1";
     }
-    if (array1Number[0] < array2Number[0]) {
+    else if (array1Number[0] < array2Number[0]) {
       return "array2";
     }
     else {
@@ -412,13 +420,13 @@ function setup() {
       if (array1Of === array2Of) {
         return "chop";
       }
-      if (array1Of === 1) {
+      else if (array1Of === 1) {
         return "array1";
       }
-      if (array2Of === 1) {
+      else if (array2Of === 1) {
         return "array2";
       }
-      if (array1Of > array2Of) {
+      else if (array1Of > array2Of) {
         return "array1";
       }
       else {
@@ -428,10 +436,10 @@ function setup() {
     if (array1Full === 1) {
       return "array1";
     }
-    if (array2Full === 1) {
+    else if (array2Full === 1) {
       return "array2";
     }
-    if (array1Full > array2Full) {
+    else if (array1Full > array2Full) {
       return "array1";
     }
     else {
@@ -463,26 +471,26 @@ function setup() {
       if (array1Kiker === array2Kiker) {
         return "chop";
       }
-      if (array1Kiker === 1) {
+      else if (array1Kiker === 1) {
         return "array1";
       }
-      if (array2Kiker === 1) {
+      else if (array2Kiker === 1) {
         return "array2";
       }
-      if (array1Kiker > array2Kiker) {
+      else if (array1Kiker > array2Kiker) {
         return "array1";
       }
-      {
+      else {
         return "array2";
       }
     }
     if (array1Quad === 1) {
       return "array1";
     }
-    if (array2Quad === 1) {
+    else if (array2Quad === 1) {
       return "array2";
     }
-    if (array1Quad > array2Quad) {
+    else if (array1Quad > array2Quad) {
       return "array1";
     }
     else {
@@ -492,6 +500,7 @@ function setup() {
   if (value === 10) {
     return "chop";
   }
+  return "chop"
 } function isStraight(array) {
   // get the numbers
   let straightArray = getNumber(array);
@@ -620,7 +629,7 @@ function generateVisualCards() {
         j,
         i,
         j / 13 * width,
-        0.5 + i / 8 * height,
+        (0.5 + i / 8) * height,
         1 / 13 * width,
         1 / 8 * height,
       ]);
@@ -814,8 +823,8 @@ function showInstructions() {
   fill("black");
   text(
     "Texas Hold'em Calculator",
-    TitleBox[0] * width + (TitleBox[2] * width) / 2,
-    TitleBox[1] * height + (TitleBox[3] * height) / 2
+    TitleBox[0] * width + TitleBox[2] * width / 2,
+    TitleBox[1] * height + TitleBox[3] * height / 2
   );
 
   let InstructionSize = 0;
@@ -824,7 +833,7 @@ function showInstructions() {
     textSize(i);
     textAlign(CENTER, CENTER);
     InstructionSize = textWidth("Instruction");
-    if ((InstructionSize * 1.35) / width > instructionBox[2]) {
+    if (InstructionSize * 1.35 / width > instructionBox[2]) {
       break;
     }
   }
@@ -838,8 +847,8 @@ function showInstructions() {
   fill("black");
   text(
     "Instruction",
-    instructionBox[0] * width + (instructionBox[2] * width) / 2,
-    instructionBox[1] * height + (instructionBox[3] * height) / 2
+    instructionBox[0] * width + instructionBox[2] * width / 2,
+    instructionBox[1] * height + instructionBox[3] * height / 2
   );
 
   let playSize = 0;
@@ -848,7 +857,7 @@ function showInstructions() {
     textSize(i);
     textAlign(CENTER, CENTER);
     playSize = textWidth("Play");
-    if ((playSize * 1.35) / width > playBox[2]) {
+    if (playSize * 1.35 / width > playBox[2]) {
       break;
     }
   }
@@ -862,7 +871,7 @@ function showInstructions() {
   fill("black");
   text(
     "Play",
-    playBox[0] * width + (playBox[2] * width) / 2,
-    playBox[1] * height + (playBox[3] * height) / 2
+    playBox[0] * width + playBox[2] * width / 2,
+    playBox[1] * height + playBox[3] * height / 2
   );
 }
