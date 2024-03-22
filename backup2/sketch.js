@@ -54,19 +54,19 @@ function draw() {
 
     fill("red");
     text(
-      floor(100 * JPCount / (JPCount + computerCount + tieCount)) +
+      floor(10000 * JPCount / (JPCount + computerCount + tieCount)) / 100 +
         "% jp win",
       100,
       200
     );
     text(
-      floor(100 * computerCount / (JPCount + computerCount + tieCount)) +
+      floor(10000 * computerCount / (JPCount + computerCount + tieCount)) / 100 +
         "% computer win",
       300,
       200
     );
     text(
-      floor(100 * tieCount / (JPCount + computerCount + tieCount)) +
+      floor(10000 * tieCount / (JPCount + computerCount + tieCount)) / 100 +
         "% tie (chop)",
       600,
       200
@@ -777,7 +777,6 @@ function mousePressed() {
     mouseY / height > instructionBox[1] &&
     mouseY / height < instructionBox[3] + instructionBox[1]
   ) {
-    print("hi");
     background(155);
     textSize(15);
     text(

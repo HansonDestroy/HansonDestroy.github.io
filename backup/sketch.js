@@ -500,7 +500,7 @@ function setup() {
   if (value === 10) {
     return "chop";
   }
-  return "chop"
+  return "chop";
 } function isStraight(array) {
   // get the numbers
   let straightArray = getNumber(array);
