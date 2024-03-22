@@ -12,6 +12,8 @@ let mode = modes[0];
 let player = {
   x: 0,
   y: 0,
+  dx: 1,
+  dy: 1,
 };
 
 function preload() {
@@ -51,7 +53,27 @@ function drawStartScreen(){
   text(modes[2], width / 2, (titleHeight + modeHeightDifference * 4) * height);
   text(modes[3], width / 2, (titleHeight + modeHeightDifference * 5) * height);
 
+  let heartX = 0.45;
+  if (mode === modes[0]){
+    imageMode(CENTER);
+    image(player, heartX * width , (titleHeight + modeHeightDifference * 2) * height, player.width * 0.08, player.height * 0.08);
+  }
 
+  if (mode === modes[1]){
+    imageMode(CENTER);
+    image(player, heartX * width , (titleHeight + modeHeightDifference * 3) * height, player.width * 0.08, player.height * 0.08);
+  }
+  
+  if (mode === modes[2]){
+    imageMode(CENTER);
+    image(player, heartX * width , (titleHeight + modeHeightDifference * 4) * height, player.width * 0.08, player.height * 0.08);
+  }
+  
+  if (mode === modes[3]){
+    imageMode(CENTER);
+    image(player, heartX * width , (titleHeight + modeHeightDifference * 5) * height, player.width * 0.08, player.height * 0.08);
+  }
+  
 }
 
 
