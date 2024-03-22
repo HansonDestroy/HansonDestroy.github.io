@@ -9,4 +9,4 @@
   - [backup 2](backup2)
 ## Projects
   - [Interactive scene](scene)
-  - [Object and Array] (objectarray)
+  - [Object and Array](objectarray)
