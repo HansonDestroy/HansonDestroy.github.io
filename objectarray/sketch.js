@@ -8,6 +8,8 @@
 let state = "starting screen";
 let modes = ["normal", "practice", "single attack", "endless"];
 let mode = 0;
+let level = 0;
+let bones = [];
 
 let player = {
   x: 0,
@@ -28,6 +30,9 @@ function draw() {
   background(100);
   if (state === "starting screen"){
     drawStartScreen();
+  }
+  else{
+    displayBones();
   }
 }
 
@@ -89,7 +94,18 @@ function keyTyped(){
   } 
   mode = mode % modes.length;
 }
-// let x;
+
+function displayBones(){
+  if (level === 1){
+  }
+}
+
+let platform1={x: 0.5,y: 0.5,l: 0.25,w: 0.05};
+let platform2={x: 0.375,y: 0.625,l: 0.05,w: 0.25};
+let platform3={x: 0.5,y: 0.75,l: 0.25,w: 0.05};
+let platform4={x: 0.625,y: 0.625,l: 0.05,w: 0.25};
+let level1Platform=[platform1,platform2,platform3,platform4];
+
 // let y;
 // let dx = 2;
 // let dy = 2;
