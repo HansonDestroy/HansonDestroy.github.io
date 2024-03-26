@@ -7,6 +7,7 @@
   - [art](art)
   - [terrain generation](07-terrainP)
   - [backup 2](backup2)
+  - [bubble](bubble)
 ## Projects
   - [Interactive scene](scene)
   - [Object and Array](objectarray)

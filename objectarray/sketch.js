@@ -7,7 +7,7 @@
 
 let state = "starting screen";
 let modes = ["normal", "practice", "single attack", "endless"];
-let mode = modes[0];
+let mode = 0;
 
 let player = {
   x: 0,
@@ -54,29 +54,38 @@ function drawStartScreen(){
   text(modes[3], width / 2, (titleHeight + modeHeightDifference * 5) * height);
 
   let heartX = 0.45;
-  if (mode === modes[0]){
+  if (mode === 0){
     imageMode(CENTER);
     image(player, heartX * width , (titleHeight + modeHeightDifference * 2) * height, player.width * 0.08, player.height * 0.08);
   }
 
-  if (mode === modes[1]){
+  if (mode === 1){
     imageMode(CENTER);
     image(player, heartX * width , (titleHeight + modeHeightDifference * 3) * height, player.width * 0.08, player.height * 0.08);
   }
   
-  if (mode === modes[2]){
+  if (mode === 2){
     imageMode(CENTER);
     image(player, heartX * width , (titleHeight + modeHeightDifference * 4) * height, player.width * 0.08, player.height * 0.08);
   }
   
-  if (mode === modes[3]){
+  if (mode === 3){
     imageMode(CENTER);
     image(player, heartX * width , (titleHeight + modeHeightDifference * 5) * height, player.width * 0.08, player.height * 0.08);
   }
   
 }
 
-
+function keyTyped(){
+  if (key === "s" && state === "starting screen"){
+    mode++;
+  }
+  if (key === "w" && state === "starting screen"){
+    mode += modes.length;
+    mode--;
+  }
+  mode = mode % modes.length;
+}
 // let x;
 // let y;
 // let dx = 2;
