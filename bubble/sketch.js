@@ -83,6 +83,14 @@ function spawnBubble() {
 
 function mousePressed(){
   for (let i = theBubbles.length - 1; i > -1; i--){
-    i=0;
+    if (clickedInBubble(mouseX,mouseY,theBubbles[i])){
+      theBubbles.splice(i,1);
+    }
   }
+}
+
+function clickedInBubble(x, y, someBubble){
+  let distanceAway = dist(x, y, someBubble.x, someBubble.y);
+  let radius = someBubble.size/2;
+  return distanceAway < radius;
 }
