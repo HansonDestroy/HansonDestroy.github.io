@@ -84,6 +84,9 @@ function keyTyped(){
     mode += modes.length;
     mode--;
   }
+  if (key === " " && state === "starting screen"){
+    state = modes[mode];
+  } 
   mode = mode % modes.length;
 }
 // let x;

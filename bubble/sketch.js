@@ -80,3 +80,9 @@ function spawnBubble() {
   theBubbles.push(someBubble);
 }
 
+
+function mousePressed(){
+  for (let i = theBubbles.length - 1; i > -1; i--){
+    i=0;
+  }
+}
