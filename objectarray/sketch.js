@@ -113,12 +113,11 @@ function keyTyped(){
 
 function innit(){
   if(level === 1){
-    imageMode(BOTTOM)
     player.x = level1Platform[2].x * height;
     player.y = level1Platform[2].y * height - level1Platform[0].w * height - heart.height * scaleOfPlayer / 2;
     fill("white");
-    line(player.x, 0, player.x, height);
-    line(0, player.y, width, player.y);
+    // line(player.x, 0, player.x, height);
+    // line(0, player.y, width, player.y);
   }
 }
 
