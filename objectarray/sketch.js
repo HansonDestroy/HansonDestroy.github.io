@@ -121,7 +121,7 @@ function keyTyped(){
   if (key === " " && state === "starting screen"){
     state = modes[mode];
     level++;
-    scaleOfPlayer = scaleOfPlayer / 1.5
+    scaleOfPlayer = 0.000045 * height
   } 
   mode = mode % modes.length;
 }
