@@ -11,22 +11,17 @@ let mode = 0;
 let level = 0;
 let bones = [];
 let scaleOfPlayer;
+let inttailizedAready = "no";
 
-// level 1 platform
-let platform1={x: 0.5,y: 0.5,l: 0.275,w: 0.025};
-let platform2={x: 0.375,y: 0.625,l: 0.025,w: 0.275};
-let platform3={x: 0.5,y: 0.75,l: 0.275,w: 0.025};
-let platform4={x: 0.625,y: 0.625,l: 0.025,w: 0.275};
-// let platform1={x: 0.5,y: 0,l: 1,w: 0.025};
-// let platform2={x: 0,y: 0.5,l: 0.025,w: 1};
-// let platform3={x: 0.5,y: 1,l: 1,w: 0.025};
-// let platform4={x: 1,y: 0.5,l: 0.025,w: 1};
-let level1Platform=[platform1,platform2,platform3,platform4];
+let currentPlatform;
+let level1Platform;
 
 let heart;
 let player = {
-  x: 3,
-  y: 3,
+  x: 0,
+  y: 0,
+  dx: 0.005,
+  dy: 0.005,
 };
 
 function preload() {
@@ -35,7 +30,21 @@ function preload() {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  scaleOfPlayer = 0.00005 * width;
+  scaleOfPlayer = 0.000045 * width;
+  player.dx = player.dx * height;
+  player.dy = player.dy * height;
+
+  // level 1 platform
+  let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.26 * height,w: 0.01 * height};
+  let platform2={x: 0.375 * height,y: 0.625 * height,l: 0.01 * height,w: 0.26 * height};
+  let platform3={x: 0.5 * height,y: 0.75 * height,l: 0.26 * height,w: 0.01 * height};
+  let platform4={x: 0.625 * height,y: 0.625 * height,l: 0.01 * height,w: 0.26 * height};
+  // let platform1={x: 0.5,y: 0,l: 1,w: 0.025};
+  // let platform2={x: 0,y: 0.5,l: 0.025,w: 1};
+  // let platform3={x: 0.5,y: 1,l: 1,w: 0.025};
+  // let platform4={x: 1,y: 0.5,l: 0.025,w: 1};
+  level1Platform = [platform1,platform2,platform3,platform4];
+  currentPlatform = level1Platform
 }
 
 function draw() {
@@ -48,6 +57,11 @@ function draw() {
     displayBones();
     displayPlatorm();
     displayPlayer();
+    movePlayer();
+    // fill("white");
+    // line(player.x, 0, player.x, height);
+    // line(0, player.y, width, player.y);
+    // circle(player.x, player.y, heart.width * scaleOfPlayer)
   }
 }
 
@@ -107,17 +121,16 @@ function keyTyped(){
   if (key === " " && state === "starting screen"){
     state = modes[mode];
     level++;
+    scaleOfPlayer = scaleOfPlayer / 1.5
   } 
   mode = mode % modes.length;
 }
 
 function innit(){
-  if(level === 1){
-    player.x = level1Platform[2].x * height;
-    player.y = level1Platform[2].y * height - level1Platform[0].w * height - heart.height * scaleOfPlayer / 2;
-    fill("white");
-    // line(player.x, 0, player.x, height);
-    // line(0, player.y, width, player.y);
+  if(level === 1 && inttailizedAready == "no"){
+    player.x = currentPlatform[2].x;
+    player.y = currentPlatform[2].y - currentPlatform[0].w / 2 - heart.height * scaleOfPlayer / 2;
+    inttailizedAready = "yes"
   }
 }
 
@@ -129,11 +142,12 @@ function displayBones(){
 
 function displayPlatorm(){
   if (level === 1){
-    for (let platform of level1Platform){
+    currentPlatform = level1Platform
+    for (let platform of currentPlatform){
       rectMode(CENTER);
       fill("white");
       noStroke();
-      rect(platform.x * height, platform.y * height, platform.l * height, platform.w * height);
+      rect(platform.x, platform.y, platform.l, platform.w);
       rectMode(LEFT);
     }
   }
@@ -142,6 +156,86 @@ function displayPlatorm(){
 function displayPlayer(){
   image(heart, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
 }
+
+function movePlayer() {
+  if (keyIsDown(87)) {
+    //w
+    let move = true;
+    for (let platform of currentPlatform) {
+      if (
+        player.y > platform.y &&
+        platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
+        platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
+        player.y - (heart.height * scaleOfPlayer) / 2 - player.dy < platform.y + platform.w / 2
+      ) {
+        move = false;
+        player.y = platform.y + platform.w / 2 + (heart.height * scaleOfPlayer) / 2;
+      }
+    }
+    if (move) {
+      player.y -= player.dy;
+    }
+  }
+  if (keyIsDown(83)) {
+    //s
+    let move = true;
+    for (let platform of currentPlatform) {
+      if (
+        player.y < platform.y &&
+        platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
+        platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
+        player.y + (heart.height * scaleOfPlayer) / 2 + player.dy > platform.y - platform.w / 2
+      ) {
+        move = false;
+        player.y = platform.y - platform.w / 2 - (heart.height * scaleOfPlayer) / 2;
+      }
+    }
+    if (move) {
+      player.y += player.dy;
+    }
+  }
+  if (keyIsDown(68)) {
+    //d
+    let move = true;
+    for (let platform of currentPlatform) {
+      if (
+        player.x < platform.x &&
+        platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
+        platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
+        player.x + (heart.width * scaleOfPlayer) / 2 + player.dx > platform.x - platform.l / 2
+      ) {
+        move = false;
+        player.x = platform.x - platform.l / 2 - (heart.width * scaleOfPlayer) / 2;
+      }
+    }
+    if (move) {
+      player.x += player.dx;
+    }
+  }
+  if (keyIsDown(65)) {
+    //a
+    let move = true;
+    for (let platform of currentPlatform) {
+      if (
+        player.x > platform.x &&
+        platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
+        platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
+        player.x - (heart.width * scaleOfPlayer) / 2 - player.dx < platform.x + platform.l / 2
+      ) {
+        move = false;
+        player.x = platform.x + platform.l / 2 + (heart.width * scaleOfPlayer) / 2;
+      }
+      // text(player.x < platform.x,50,50);
+      // text(platform.y + platform.w / 2 < player.y - (heart.height * scaleOfPlayer) / 2,150,platform.y);
+      // text(platform.y - platform.w / 2 > player.y + (heart.height * scaleOfPlayer),250,50);
+      // text(player.x + (heart.width * scaleOfPlayer) / 2 + player.dx > platform.x - platform.l / 2,350,50);
+    }
+    if (move) {
+      player.x -= player.dx;
+    }
+  }
+}
+
 
 
 // let y;
