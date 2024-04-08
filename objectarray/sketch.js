@@ -161,8 +161,8 @@ function setup() {
         mode: "on",
         accerlerationX: 0,
         dx: 0,
-        accerlerationY: -0.5 / 662 * height,
-        dy: -5 / 662 * height,
+        accerlerationY: -0.9 / 662 * height,
+        dy: -9 / 662 * height,
       }
 
       let gravitaty5 = {
@@ -187,8 +187,8 @@ function setup() {
     if (directions[randomNumber] == "right"){
       let gravitaty4 = {
         mode: "on",
-        accerlerationX: 0.5 / 662 * height,
-        dx: 5 / 662 * height,
+        accerlerationX: 0.9 / 662 * height,
+        dx: 9 / 662 * height,
         accerlerationY: 0,
         dy: 0,
       }
@@ -215,8 +215,8 @@ function setup() {
     if (directions[randomNumber] == "left"){
       let gravitaty4 = {
         mode: "on",
-        accerlerationX: -0.5 / 662 * height,
-        dx: -5 / 662 * height,
+        accerlerationX: -0.9 / 662 * height,
+        dx: -9 / 662 * height,
         accerlerationY: 0,
         dy: 0,
       }
@@ -435,6 +435,7 @@ function displayBones(){
       if (attack.direction === "left" || attack.direction === "right"){
         currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
       }
+      /////// dont cauuasd
       // print(currentGravity[currentGravityIndex],attack.direction)
       // print(currentGravity[currentGravityIndex].dx)
     }
@@ -442,6 +443,7 @@ function displayBones(){
     if (leveltime - time > attack.endTime){
       currentAttackIndex++;
       time = millis();
+      currentGravityIndex = 0;
       currentGravity = currentBones[currentAttackIndex].gravitaty
     }
 
