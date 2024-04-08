@@ -8,6 +8,8 @@
 let state = "starting screen";
 let modes = ["normal", "practice", "single attack", "endless"];
 let mode = 0;
+let actions = ["fight", "act", "item", "spare"]
+let action = 0;
 let level = 0;
 let scaleOfPlayer;
 let time;
@@ -57,12 +59,342 @@ function setup() {
   player.dx = player.dx * height;
   player.dy = player.dy * height;
 
-  // music
-  megalovania.jump(0);
-  megalovania.play();
-  megalovania.setLoop(true);
-  // level 1
+  // // music
+  // megalovania.jump(0);
+  // megalovania.play();
+  // megalovania.setLoop(true);
+  
+  loadLevel1All();  
+}
 
+function draw() {
+  background(100);
+  if (state === "starting screen"){
+    drawStartScreen();
+  }
+  else if (state !== "death"){
+    innit();
+    displayBones();
+    displayPlatorm();
+    movePlayer();
+    displayPlayer();
+
+    text(player.health,50,50);
+    if (player.health < 0){
+      state = "death";
+    }
+    
+    if (currentBones[currentAttackIndex].type === "next round"){
+      background(0)
+      text("advance level",50,50)
+    }
+
+    // fill("white");
+    // line(player.x, 0, player.x, height);
+    // line(0, player.y, width, player.y);
+    // circle(player.x, player.y, heart.width * scaleOfPlayer)
+  }
+  else{
+    background(0);
+    fill("white");
+    text("die",50,50);
+  }
+}
+function drawStartScreen(){
+  let titleHeight = 0.25;
+  let titleWidth = 0.6;
+  let modeWidth = 0.1;
+  let modeHeightDifference = 0.1;
+  fill("white");
+  textAlign(CENTER,CENTER);
+  textSize(1);
+  for(let i = 0; textWidth("Sans Boss Fight from Undertale") < titleWidth * width; i++){
+    textSize(i);
+  }
+  text("Sans Boss Fight from Undertale", width / 2, titleHeight * height);
+  textSize(1);
+  for(let i = 1; textWidth("Normal") < modeWidth * width; i++){
+    textSize(i);
+  }
+  textAlign(LEFT,CENTER);
+  text(modes[0], width / 2, (titleHeight + modeHeightDifference * 2) * height);
+  text(modes[1], width / 2, (titleHeight + modeHeightDifference * 3) * height);
+  text(modes[2], width / 2, (titleHeight + modeHeightDifference * 4) * height);
+  text(modes[3], width / 2, (titleHeight + modeHeightDifference * 5) * height);
+
+  let heartX = 0.45;
+  if (mode === 0){
+    imageMode(CENTER);
+    image(heart, heartX * width , (titleHeight + modeHeightDifference * 2) * height, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+  }
+
+  if (mode === 1){
+    imageMode(CENTER);
+    image(heart, heartX * width , (titleHeight + modeHeightDifference * 3) * height, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+  }
+  
+  if (mode === 2){
+    imageMode(CENTER);
+    image(heart, heartX * width , (titleHeight + modeHeightDifference * 4) * height, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+  }
+  
+  if (mode === 3){
+    imageMode(CENTER);
+    image(heart, heartX * width , (titleHeight + modeHeightDifference * 5) * height, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+  }
+  
+}
+function keyTyped(){
+  if (key === "s" && state === "starting screen"){
+    mode++;
+  }
+  if (key === "w" && state === "starting screen"){
+    mode += modes.length;
+    mode--;
+  }
+  if (key === " " && state === "starting screen"){
+    state = modes[mode];
+    level++;
+    scaleOfPlayer = 0.000045 * height;
+  } 
+  mode = mode % modes.length;
+}
+function innit(){
+  if(level === 1 && inttailizedAready === "no"){
+    player.x = currentPlatform[2].x;
+    player.y = currentPlatform[1].y;
+    inttailizedAready = "yes";
+    time = millis();
+  }
+}
+function displayBones(){
+  let leveltime = millis();
+  let attack = currentBones[currentAttackIndex];
+  if (attack.type === "tab"){
+    if (leveltime - time < attack.reaction){
+      rectMode(CENTER);
+      fill(0,150,0);
+      rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
+    }
+    else{
+      rectMode(CENTER);
+      fill(150,150,150);
+      rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
+      if (
+        player.x < attack.rectangleInfo[0] + attack.rectangleInfo[2] / 2 &&
+        player.x > attack.rectangleInfo[0] - attack.rectangleInfo[2] / 2 &&
+        player.y < attack.rectangleInfo[1] + attack.rectangleInfo[3] / 2 &&
+        player.y > attack.rectangleInfo[1] - attack.rectangleInfo[3] / 2 &&
+        damgeTime + attack.cooldown < leveltime) {
+        player.health -= attack.damage;
+        damgeTime = millis();
+      }
+    }
+
+    if (leveltime - time > attack.changeTime){
+      currentGravityIndex = 2;
+    }
+    else if(currentGravityIndex === 2){
+      currentGravityIndex--;
+      if (attack.direction === "down" || attack.direction === "up"){
+        currentGravity[currentGravityIndex].dy = currentGravity[currentGravityIndex].dyOriginal;
+      }
+      if (attack.direction === "left" || attack.direction === "right"){
+        currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
+      }
+    }
+
+    if (leveltime - time > attack.endTime){
+      currentAttackIndex++;
+      time = millis();
+      currentGravityIndex = 0;
+      currentGravity = currentBones[currentAttackIndex].gravitaty;
+    }
+
+  }
+}
+function displayPlatorm(){
+  if (level === 1){
+    for (let platform of currentPlatform){
+      rectMode(CENTER);
+      fill("white");
+      noStroke();
+      rect(platform.x, platform.y, platform.l, platform.w);
+    }
+  }
+}
+function movePlayer() {
+  let gravitaty = currentGravity[currentGravityIndex];
+  if (gravitaty.mode === "off"){
+    stopDown();
+    stopUp();
+    stopLeft();
+    stopRight();
+  }
+  else{
+    if (gravitaty.accerlerationY < 0) {
+      //throw up
+      let move = true;
+      for (let platform of currentPlatform) {
+        if (
+          player.y > platform.y &&
+          platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
+          platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
+          player.y - heart.height * scaleOfPlayer / 2 + gravitaty.dy < platform.y + platform.w / 2
+        ) {
+          move = false;
+          if (keyIsDown(83)){
+            currentGravityIndex++;
+          }
+          player.y = platform.y + platform.w / 2 + heart.height * scaleOfPlayer / 2;
+        }
+      }
+
+      if (keyIsDown(65)){
+        stopLeft();
+      }
+      else if (keyIsDown(68)){
+        stopRight();
+      }
+
+      if (gravitaty.dy > 0 && !keyIsDown(83)){
+        gravitaty.dy = 0;
+      }
+
+      if (move) {
+        player.y += gravitaty.dy;
+        gravitaty.dy += gravitaty.accerlerationY;
+      }
+    }
+    if (gravitaty.accerlerationY > 0) {
+      //s
+      let move = true;
+      for (let platform of currentPlatform) {
+        if (
+          player.y < platform.y &&
+          platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
+          platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
+          player.y + heart.height * scaleOfPlayer / 2 + gravitaty.dy > platform.y - platform.w / 2
+        ) {
+          move = false;
+          if (keyIsDown(87)){
+            currentGravityIndex++;
+          }
+          player.y = platform.y - platform.w / 2 - heart.height * scaleOfPlayer / 2;
+        }
+      }
+      
+      if (keyIsDown(65)){
+        stopLeft();
+      }
+      else if (keyIsDown(68)){
+        stopRight();
+      }
+
+      if (gravitaty.dy < 0 && !keyIsDown(87)){
+        gravitaty.dy = 0;
+      }
+
+      if (move) {
+        player.y += gravitaty.dy;
+        gravitaty.dy += gravitaty.accerlerationY;
+      }
+    }
+    if (gravitaty.accerlerationX > 0) {
+      //d
+      let move = true;
+      for (let platform of currentPlatform) {
+        if (
+          player.x < platform.x &&
+          platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
+          platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
+          player.x + heart.width * scaleOfPlayer / 2 + gravitaty.dx > platform.x - platform.l / 2
+        ) {
+          move = false;
+          if (keyIsDown(65)){
+            currentGravityIndex++;
+          }
+          player.x = platform.x - platform.l / 2 - heart.width * scaleOfPlayer / 2;
+        }
+      }
+
+      if (keyIsDown(87)){
+        stopUp();
+      }
+      else if (keyIsDown(83)){
+        stopDown();
+      }
+
+      if (gravitaty.dx < 0 && !keyIsDown(65)){
+        gravitaty.dx = 0;
+      }
+
+      if (move) {
+        player.x += gravitaty.dx;
+        gravitaty.dx += gravitaty.accerlerationX;
+      }
+    }
+    if (gravitaty.accerlerationX < 0) {
+      //a
+      let move = true;
+      for (let platform of currentPlatform) {
+        if (
+          player.x > platform.x &&
+          platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
+          platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
+          player.x - heart.width * scaleOfPlayer / 2 + gravitaty.dx < platform.x + platform.l / 2
+        ) {
+          move = false;
+          if (keyIsDown(68)){
+            currentGravityIndex++;
+          }
+          player.x = platform.x + platform.l / 2 + heart.width * scaleOfPlayer / 2;
+        }
+      }
+      
+      if (keyIsDown(87)){
+        stopUp();
+      }
+      else if (keyIsDown(83)){
+        stopDown();
+      }
+
+      if (gravitaty.dx > 0 && !keyIsDown(68)){
+        gravitaty.dx = 0;
+      }
+
+      if (move) {
+        player.x += gravitaty.dx;
+        gravitaty.dx += gravitaty.accerlerationX;
+      }
+    }
+  }
+}
+function displayPlayer(){
+  let attack = currentBones[currentAttackIndex];
+  let gravitaty = currentGravity[currentGravityIndex];
+  if (gravitaty.mode === "off"){
+    image(heart, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+  }
+  else{
+    if (attack.direction === "down"){
+      image(heartDown, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    }
+    if (attack.direction === "up"){
+      image(heartUp, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    }
+    if (attack.direction === "left"){
+      image(heartLeft, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    }
+    if (attack.direction === "right"){
+      image(heartRight, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    }
+  }
+
+}
+
+function loadLevel1All(){
+  // level 1
   // platform
   let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.26 * height,w: 0.01 * height};
   let platform2={x: 0.375 * height,y: 0.625 * height,l: 0.01 * height,w: 0.26 * height};
@@ -75,7 +407,6 @@ function setup() {
   let level1Platform = [platform1,platform2,platform3,platform4];
   currentPlatform = level1Platform;
 
-  
   // bones
   // attack 1
   // gravity
@@ -131,7 +462,7 @@ function setup() {
   
   // attack 2
 
-  for (let i = 0; i < 100; i++){
+  for (let i = 0; i < 4; i++){
 
     // random attack
     let randomNumber = floor(random(4));
@@ -307,334 +638,6 @@ function setup() {
   
 }
 
-function draw() {
-  background(100);
-  if (state === "starting screen"){
-    drawStartScreen();
-  }
-  else if (state !== "death"){
-    innit();
-    displayBones();
-    displayPlatorm();
-    movePlayer();
-    displayPlayer();
-    text(player.health,50,50);
-    
-    if (player.health < 0){
-      state = "death";
-    }
-
-    // fill("white");
-    // line(player.x, 0, player.x, height);
-    // line(0, player.y, width, player.y);
-    // circle(player.x, player.y, heart.width * scaleOfPlayer)
-  }
-  else{
-    background(0);
-    fill("white");
-    text("die",50,50);
-  }
-}
-
-function drawStartScreen(){
-  let titleHeight = 0.25;
-  let titleWidth = 0.6;
-  let modeWidth = 0.1;
-  let modeHeightDifference = 0.1;
-  fill("white");
-  textAlign(CENTER,CENTER);
-  textSize(1);
-  for(let i = 0; textWidth("Sans Boss Fight from Undertale") < titleWidth * width; i++){
-    textSize(i);
-  }
-  text("Sans Boss Fight from Undertale", width / 2, titleHeight * height);
-  textSize(1);
-  for(let i = 1; textWidth("Normal") < modeWidth * width; i++){
-    textSize(i);
-  }
-  textAlign(LEFT,CENTER);
-  text(modes[0], width / 2, (titleHeight + modeHeightDifference * 2) * height);
-  text(modes[1], width / 2, (titleHeight + modeHeightDifference * 3) * height);
-  text(modes[2], width / 2, (titleHeight + modeHeightDifference * 4) * height);
-  text(modes[3], width / 2, (titleHeight + modeHeightDifference * 5) * height);
-
-  let heartX = 0.45;
-  if (mode === 0){
-    imageMode(CENTER);
-    image(heart, heartX * width , (titleHeight + modeHeightDifference * 2) * height, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-  }
-
-  if (mode === 1){
-    imageMode(CENTER);
-    image(heart, heartX * width , (titleHeight + modeHeightDifference * 3) * height, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-  }
-  
-  if (mode === 2){
-    imageMode(CENTER);
-    image(heart, heartX * width , (titleHeight + modeHeightDifference * 4) * height, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-  }
-  
-  if (mode === 3){
-    imageMode(CENTER);
-    image(heart, heartX * width , (titleHeight + modeHeightDifference * 5) * height, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-  }
-  
-}
-
-function keyTyped(){
-  if (key === "s" && state === "starting screen"){
-    mode++;
-  }
-  if (key === "w" && state === "starting screen"){
-    mode += modes.length;
-    mode--;
-  }
-  if (key === " " && state === "starting screen"){
-    state = modes[mode];
-    level++;
-    scaleOfPlayer = 0.000045 * height;
-  } 
-  mode = mode % modes.length;
-}
-
-function innit(){
-  if(level === 1 && inttailizedAready === "no"){
-    player.x = currentPlatform[2].x;
-    player.y = currentPlatform[1].y;
-    inttailizedAready = "yes";
-    time = millis();
-  }
-}
-
-function displayBones(){
-  let leveltime = millis();
-  let attack = currentBones[currentAttackIndex];
-  if (attack.type === "tab"){
-    if (leveltime - time < attack.reaction){
-      rectMode(CENTER);
-      fill(0,150,0);
-      rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
-    }
-    else{
-      rectMode(CENTER);
-      fill(150,150,150);
-      rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
-      if (
-        player.x < attack.rectangleInfo[0] + attack.rectangleInfo[2] / 2 &&
-        player.x > attack.rectangleInfo[0] - attack.rectangleInfo[2] / 2 &&
-        player.y < attack.rectangleInfo[1] + attack.rectangleInfo[3] / 2 &&
-        player.y > attack.rectangleInfo[1] - attack.rectangleInfo[3] / 2 &&
-        damgeTime + attack.cooldown < leveltime) {
-        player.health -= attack.damage;
-        damgeTime = millis();
-      }
-    }
-
-    if (leveltime - time > attack.changeTime){
-      currentGravityIndex = 2;
-    }
-    else if(currentGravityIndex === 2){
-      currentGravityIndex--;
-      if (attack.direction === "down" || attack.direction === "up"){
-        currentGravity[currentGravityIndex].dy = currentGravity[currentGravityIndex].dyOriginal;
-      }
-      if (attack.direction === "left" || attack.direction === "right"){
-        currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
-      }
-    }
-
-    if (leveltime - time > attack.endTime){
-      currentAttackIndex++;
-      time = millis();
-      currentGravityIndex = 0;
-      currentGravity = currentBones[currentAttackIndex].gravitaty;
-    }
-
-  }
-}
-
-function displayPlatorm(){
-  if (level === 1){
-    for (let platform of currentPlatform){
-      rectMode(CENTER);
-      fill("white");
-      noStroke();
-      rect(platform.x, platform.y, platform.l, platform.w);
-    }
-  }
-} 
-function displayPlayer(){
-  let attack = currentBones[currentAttackIndex];
-  let gravitaty = currentGravity[currentGravityIndex];
-  if (gravitaty.mode === "off"){
-    image(heart, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-  }
-  else{
-    if (attack.direction === "down"){
-      image(heartDown, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-    }
-    if (attack.direction === "up"){
-      image(heartUp, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-    }
-    if (attack.direction === "left"){
-      image(heartLeft, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-    }
-    if (attack.direction === "right"){
-      image(heartRight, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-    }
-  }
-
-}
-function movePlayer() {
-  let gravitaty = currentGravity[currentGravityIndex];
-  if (gravitaty.mode === "off"){
-    stopDown();
-    stopUp();
-    stopLeft();
-    stopRight();
-  }
-  else{
-    if (gravitaty.accerlerationY < 0) {
-      //throw up
-      let move = true;
-      for (let platform of currentPlatform) {
-        if (
-          player.y > platform.y &&
-          platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
-          platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
-          player.y - heart.height * scaleOfPlayer / 2 + gravitaty.dy < platform.y + platform.w / 2
-        ) {
-          move = false;
-          if (keyIsDown(83)){
-            currentGravityIndex++;
-          }
-          player.y = platform.y + platform.w / 2 + heart.height * scaleOfPlayer / 2;
-        }
-      }
-
-      if (keyIsDown(65)){
-        stopLeft();
-      }
-      else if (keyIsDown(68)){
-        stopRight();
-      }
-
-      if (gravitaty.dy > 0 && !keyIsDown(83)){
-        gravitaty.dy = 0;
-      }
-
-      if (move) {
-        player.y += gravitaty.dy;
-        gravitaty.dy += gravitaty.accerlerationY;
-      }
-    }
-    if (gravitaty.accerlerationY > 0) {
-      //s
-      let move = true;
-      for (let platform of currentPlatform) {
-        if (
-          player.y < platform.y &&
-          platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
-          platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
-          player.y + heart.height * scaleOfPlayer / 2 + gravitaty.dy > platform.y - platform.w / 2
-        ) {
-          move = false;
-          if (keyIsDown(87)){
-            currentGravityIndex++;
-          }
-          player.y = platform.y - platform.w / 2 - heart.height * scaleOfPlayer / 2;
-        }
-      }
-      
-      if (keyIsDown(65)){
-        stopLeft();
-      }
-      else if (keyIsDown(68)){
-        stopRight();
-      }
-
-      if (gravitaty.dy < 0 && !keyIsDown(87)){
-        gravitaty.dy = 0;
-      }
-
-      if (move) {
-        player.y += gravitaty.dy;
-        gravitaty.dy += gravitaty.accerlerationY;
-      }
-    }
-    if (gravitaty.accerlerationX > 0) {
-      //d
-      let move = true;
-      for (let platform of currentPlatform) {
-        if (
-          player.x < platform.x &&
-          platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
-          platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
-          player.x + heart.width * scaleOfPlayer / 2 + gravitaty.dx > platform.x - platform.l / 2
-        ) {
-          move = false;
-          if (keyIsDown(65)){
-            currentGravityIndex++;
-          }
-          player.x = platform.x - platform.l / 2 - heart.width * scaleOfPlayer / 2;
-        }
-      }
-
-      if (keyIsDown(87)){
-        stopUp();
-      }
-      else if (keyIsDown(83)){
-        stopDown();
-      }
-
-      if (gravitaty.dx < 0 && !keyIsDown(65)){
-        gravitaty.dx = 0;
-      }
-
-      if (move) {
-        player.x += gravitaty.dx;
-        gravitaty.dx += gravitaty.accerlerationX;
-      }
-    }
-    if (gravitaty.accerlerationX < 0) {
-      //a
-      let move = true;
-      for (let platform of currentPlatform) {
-        if (
-          player.x > platform.x &&
-          platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
-          platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
-          player.x - heart.width * scaleOfPlayer / 2 + gravitaty.dx < platform.x + platform.l / 2
-        ) {
-          move = false;
-          if (keyIsDown(68)){
-            currentGravityIndex++;
-          }
-          player.x = platform.x + platform.l / 2 + heart.width * scaleOfPlayer / 2;
-        }
-      }
-      
-      if (keyIsDown(87)){
-        stopUp();
-      }
-      else if (keyIsDown(83)){
-        stopDown();
-      }
-
-      if (gravitaty.dx > 0 && !keyIsDown(68)){
-        gravitaty.dx = 0;
-      }
-
-      if (move) {
-        player.x += gravitaty.dx;
-        gravitaty.dx += gravitaty.accerlerationX;
-      }
-    }
-  }
-}
-
-
-
 function stopRight(){
   if (keyIsDown(68)){
     //d
@@ -716,3 +719,8 @@ function stopDown(){
   }
 }
 
+function mouseReleased(){
+  megalovania.jump(0);
+  megalovania.play();
+  megalovania.setLoop(true);
+}
