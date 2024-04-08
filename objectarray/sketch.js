@@ -435,7 +435,7 @@ function displayBones(){
       if (attack.direction === "left" || currentGravity[currentGravityIndex].direction === "right"){
         currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
       }
-      // print(currentGravity[currentGravityIndex].dy)
+      print(currentGravityIndex)
       // print(currentGravity[currentGravityIndex].dx)
     }
 
@@ -497,14 +497,14 @@ function movePlayer() {
           player.y > platform.y &&
           platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
           platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
-          player.y - (heart.height * scaleOfPlayer) / 2 + gravitaty.dy > platform.y - platform.w / 2
+          player.y - (heart.height * scaleOfPlayer) / 2 + gravitaty.dy < platform.y + platform.w / 2
         ) {
           move = false;
           if (keyIsDown(83)){
+            print(currentGravityIndex)
             currentGravityIndex++;
           }
-          print(gravitaty)
-          // player.y = platform.y + platform.w / 2 + (heart.height * scaleOfPlayer) / 2;
+          player.y = platform.y + platform.w / 2 + (heart.height * scaleOfPlayer) / 2;
         }
       }
 
