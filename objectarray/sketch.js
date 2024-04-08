@@ -13,14 +13,13 @@ let scaleOfPlayer;
 let time;
 let inttailizedAready = "no";
 let damgeTime = 0;
-// let macroSpeed = 2.5 / 662 * height
 
 let platformOrder = {
   top : 0,
   left : 1,
   down: 2,
   right : 3,
-}
+};
 
 let currentBones;
 let currentAttackIndex;
@@ -29,6 +28,12 @@ let currentGravity;
 let currentGravityIndex;
 
 let heart;
+let heartDown;
+let heartUp;
+let heartLeft;
+let heartRight;
+let megalovania;
+
 let player = {
   x: 0,
   y: 0,
@@ -43,6 +48,7 @@ function preload() {
   heartUp = loadImage("heartUp.png");
   heartLeft = loadImage("heartLeft.png");
   heartRight = loadImage("heartRight.png");
+  megalovania = loadSound("Megalovania.mp3");
 }
 
 function setup() {
@@ -51,7 +57,11 @@ function setup() {
   player.dx = player.dx * height;
   player.dy = player.dy * height;
 
-  // level 1 
+  // music
+  megalovania.jump(0);
+  megalovania.play();
+  megalovania.setLoop(true);
+  // level 1
 
   // platform
   let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.26 * height,w: 0.01 * height};
@@ -63,7 +73,7 @@ function setup() {
   // let platform3={x: 0.5,y: 1,l: 1,w: 0.025}; down
   // let platform4={x: 1,y: 0.5,l: 0.025,w: 1}; right
   let level1Platform = [platform1,platform2,platform3,platform4];
-  currentPlatform = level1Platform
+  currentPlatform = level1Platform;
 
   
   // bones
@@ -75,7 +85,7 @@ function setup() {
     dx: 0,
     accerlerationY: 0.3 / 662 * height,
     dy: 3 / 662 * height,
-  }
+  };
 
   let gravitaty2 = {
     mode: "on",
@@ -83,7 +93,7 @@ function setup() {
     dx: 0,
     accerlerationY: 0.1 / 662 * height,
     dy: -3.5 / 662 * height,
-  }
+  };
 
   let gravitaty3 = {
     mode: "off",
@@ -91,9 +101,9 @@ function setup() {
     dx: 0,
     accerlerationY: 0,
     dy: 0,
-  }
+  };
 
-  currentGravity = [gravitaty1, gravitaty2, gravitaty3]
+  currentGravity = [gravitaty1, gravitaty2, gravitaty3];
   currentGravityIndex = 0;
 
   let attack1 = {
@@ -107,35 +117,35 @@ function setup() {
     height: 0.08,
     rectangleInfo: [],
     gravitaty: structuredClone(currentGravity)
-  }
+  };
 
-  attack1.height = attack1.height * height
+  attack1.height = attack1.height * height;
   attack1.rectangleInfo = [
     level1Platform[platformOrder.down].x,
     level1Platform[platformOrder.down].y - level1Platform[platformOrder.down].w / 2 - attack1.height / 2,
     level1Platform[platformOrder.down].l - level1Platform[platformOrder.left].l - level1Platform[platformOrder.right].l,
     attack1.height
-  ]
-  currentAttackIndex = 0
-  currentBones = [attack1]
+  ];
+  currentAttackIndex = 0;
+  currentBones = [attack1];
   
   // attack 2
 
   for (let i = 0; i < 100; i++){
 
     // random attack
-    let randomNumber = floor(random(4))
-    let directions = ["up", "down", "left", "right"]
+    let randomNumber = floor(random(4));
+    let directions = ["up", "down", "left", "right"];
 
     // gravity
-    if (directions[randomNumber] == "down"){
+    if (directions[randomNumber] === "down"){
       let gravitaty4 = {
         mode: "on",
         accerlerationX: 0,
         dx: 0,
         accerlerationY: 0.5 / 662 * height,
         dy: 5 / 662 * height,
-      }
+      };
 
       let gravitaty5 = {
         mode: "on",
@@ -144,7 +154,7 @@ function setup() {
         accerlerationY: 0.1 / 662 * height,
         dy: -3.5 / 662 * height,
         dyOriginal: -3.5 / 662 * height,
-      }
+      };
 
       let gravitaty6 = {
         mode: "off",
@@ -152,18 +162,18 @@ function setup() {
         dx: 0,
         accerlerationY: 0,
         dy: 0,
-      }
-      currentGravity = [gravitaty4,gravitaty5,gravitaty6]
+      };
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6];
     }
 
-    if (directions[randomNumber] == "up"){
+    if (directions[randomNumber] === "up"){
       let gravitaty4 = {
         mode: "on",
         accerlerationX: 0,
         dx: 0,
         accerlerationY: -0.9 / 662 * height,
         dy: -9 / 662 * height,
-      }
+      };
 
       let gravitaty5 = {
         mode: "on",
@@ -172,7 +182,7 @@ function setup() {
         accerlerationY: -0.1 / 662 * height,
         dy: 3.5 / 662 * height,
         dyOriginal: 3.5 / 662 * height,
-      }
+      };
 
       let gravitaty6 = {
         mode: "off",
@@ -180,18 +190,18 @@ function setup() {
         dx: 0,
         accerlerationY: 0,
         dy: 0,
-      }
-      currentGravity = [gravitaty4,gravitaty5,gravitaty6]
+      };
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6];
     }
 
-    if (directions[randomNumber] == "right"){
+    if (directions[randomNumber] === "right"){
       let gravitaty4 = {
         mode: "on",
         accerlerationX: 0.9 / 662 * height,
         dx: 9 / 662 * height,
         accerlerationY: 0,
         dy: 0,
-      }
+      };
 
       let gravitaty5 = {
         mode: "on",
@@ -200,7 +210,7 @@ function setup() {
         dxOriginal: -3.5 / 662 * height,
         accerlerationY: 0,
         dy: 0,
-      }
+      };
 
       let gravitaty6 = {
         mode: "off",
@@ -208,18 +218,18 @@ function setup() {
         dx: 0,
         accerlerationY: 0,
         dy: 0,
-      }
-      currentGravity = [gravitaty4,gravitaty5,gravitaty6]
+      };
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6];
     }
 
-    if (directions[randomNumber] == "left"){
+    if (directions[randomNumber] === "left"){
       let gravitaty4 = {
         mode: "on",
         accerlerationX: -0.9 / 662 * height,
         dx: -9 / 662 * height,
         accerlerationY: 0,
         dy: 0,
-      }
+      };
 
       let gravitaty5 = {
         mode: "on",
@@ -228,7 +238,7 @@ function setup() {
         dxOriginal: 3.5 / 662 * height,
         accerlerationY: 0,
         dy: 0,
-      }
+      };
 
       let gravitaty6 = {
         mode: "off",
@@ -236,8 +246,8 @@ function setup() {
         dx: 0,
         accerlerationY: 0,
         dy: 0,
-      }
-      currentGravity = [gravitaty4,gravitaty5,gravitaty6]
+      };
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6];
     }
 
     let attack2 = {
@@ -251,49 +261,49 @@ function setup() {
       height: 0.02,
       rectangleInfo: [],
       gravitaty: structuredClone(currentGravity),
-    }
+    };
 
-    attack2.height = attack2.height * height
+    attack2.height = attack2.height * height;
     if (attack2.direction === "up"){
       attack2.rectangleInfo = [
-      level1Platform[platformOrder.top].x,
-      level1Platform[platformOrder.top].y + level1Platform[platformOrder.down].w / 2 + attack2.height / 2,
-      level1Platform[platformOrder.top].l - level1Platform[platformOrder.left].l - level1Platform[platformOrder.right].l,
-      attack2.height
+        level1Platform[platformOrder.top].x,
+        level1Platform[platformOrder.top].y + level1Platform[platformOrder.down].w / 2 + attack2.height / 2,
+        level1Platform[platformOrder.top].l - level1Platform[platformOrder.left].l - level1Platform[platformOrder.right].l,
+        attack2.height
       ];
     }
     if (attack2.direction === "down"){
       attack2.rectangleInfo = [
-      level1Platform[platformOrder.down].x,
-      level1Platform[platformOrder.down].y - level1Platform[platformOrder.down].w / 2 - attack2.height / 2,
-      level1Platform[platformOrder.down].l - level1Platform[platformOrder.left].l - level1Platform[platformOrder.right].l,
-      attack2.height
+        level1Platform[platformOrder.down].x,
+        level1Platform[platformOrder.down].y - level1Platform[platformOrder.down].w / 2 - attack2.height / 2,
+        level1Platform[platformOrder.down].l - level1Platform[platformOrder.left].l - level1Platform[platformOrder.right].l,
+        attack2.height
       ];
     }
     if (attack2.direction === "left"){
       attack2.rectangleInfo = [
-      level1Platform[platformOrder.left].x + level1Platform[platformOrder.left].l / 2 + attack2.height / 2,
-      level1Platform[platformOrder.left].y,
-      attack2.height,
-      level1Platform[platformOrder.left].w - level1Platform[platformOrder.top].w - level1Platform[platformOrder.down].w
+        level1Platform[platformOrder.left].x + level1Platform[platformOrder.left].l / 2 + attack2.height / 2,
+        level1Platform[platformOrder.left].y,
+        attack2.height,
+        level1Platform[platformOrder.left].w - level1Platform[platformOrder.top].w - level1Platform[platformOrder.down].w
       ];
     }
     if (attack2.direction === "right"){
       attack2.rectangleInfo = [
-      level1Platform[platformOrder.right].x - level1Platform[platformOrder.right].l / 2 - attack2.height / 2,
-      level1Platform[platformOrder.right].y,
-      attack2.height,
-      level1Platform[platformOrder.right].w - level1Platform[platformOrder.top].w - level1Platform[platformOrder.down].w
+        level1Platform[platformOrder.right].x - level1Platform[platformOrder.right].l / 2 - attack2.height / 2,
+        level1Platform[platformOrder.right].y,
+        attack2.height,
+        level1Platform[platformOrder.right].w - level1Platform[platformOrder.top].w - level1Platform[platformOrder.down].w
       ];
     }
-    currentBones.push(attack2)
+    currentBones.push(attack2);
   }
 
   // attack last
-  let attackLast = {type: "next round"}
-  currentBones.push(attackLast)
+  let attackLast = {type: "next round"};
+  currentBones.push(attackLast);
 
-  currentGravity = [gravitaty1,gravitaty2,gravitaty3]
+  currentGravity = [gravitaty1,gravitaty2,gravitaty3];
   
 }
 
@@ -308,10 +318,10 @@ function draw() {
     displayPlatorm();
     movePlayer();
     displayPlayer();
-    text(player.health,50,50)
+    text(player.health,50,50);
     
     if (player.health < 0){
-      state = "death"
+      state = "death";
     }
 
     // fill("white");
@@ -320,9 +330,9 @@ function draw() {
     // circle(player.x, player.y, heart.width * scaleOfPlayer)
   }
   else{
-    background(0)
-    fill("white")
-    text("die",50,50)
+    background(0);
+    fill("white");
+    text("die",50,50);
   }
 }
 
@@ -382,16 +392,16 @@ function keyTyped(){
   if (key === " " && state === "starting screen"){
     state = modes[mode];
     level++;
-    scaleOfPlayer = 0.000045 * height
+    scaleOfPlayer = 0.000045 * height;
   } 
   mode = mode % modes.length;
 }
 
 function innit(){
-  if(level === 1 && inttailizedAready == "no"){
+  if(level === 1 && inttailizedAready === "no"){
     player.x = currentPlatform[2].x;
     player.y = currentPlatform[1].y;
-    inttailizedAready = "yes"
+    inttailizedAready = "yes";
     time = millis();
   }
 }
@@ -402,54 +412,43 @@ function displayBones(){
   if (attack.type === "tab"){
     if (leveltime - time < attack.reaction){
       rectMode(CENTER);
-      fill(0,150,0)
+      fill(0,150,0);
       rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
     }
     else{
       rectMode(CENTER);
-      fill(150,150,150)
+      fill(150,150,150);
       rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
       if (
         player.x < attack.rectangleInfo[0] + attack.rectangleInfo[2] / 2 &&
         player.x > attack.rectangleInfo[0] - attack.rectangleInfo[2] / 2 &&
         player.y < attack.rectangleInfo[1] + attack.rectangleInfo[3] / 2 &&
         player.y > attack.rectangleInfo[1] - attack.rectangleInfo[3] / 2 &&
-        damgeTime + attack.cooldown < leveltime){
-          player.health -= attack.damage
-          damgeTime = millis()
+        damgeTime + attack.cooldown < leveltime) {
+        player.health -= attack.damage;
+        damgeTime = millis();
       }
-      // text(damgeTime,100,50)
-      // text(attack.cooldown,100,150)
-      // text(leveltime,100,250)
-      // text(player.y > attack.rectangleInfo[1] - attack.rectangleInfo[3] / 2,100,350)
-      // text(damgeTime + attack.cooldown > leveltime,200,150)
     }
 
     if (leveltime - time > attack.changeTime){
-      currentGravityIndex = 2
+      currentGravityIndex = 2;
     }
-    else if(currentGravityIndex == 2){
-      currentGravityIndex--
-      // currentGravity[currentGravityIndex].dy = -3.5 / 662 * height;
+    else if(currentGravityIndex === 2){
+      currentGravityIndex--;
       if (attack.direction === "down" || attack.direction === "up"){
         currentGravity[currentGravityIndex].dy = currentGravity[currentGravityIndex].dyOriginal;
       }
       if (attack.direction === "left" || attack.direction === "right"){
         currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
       }
-      /////// dont cauuasd
-      // print(currentGravity[currentGravityIndex],attack.direction)
-      // print(currentGravity[currentGravityIndex].dx)
     }
 
     if (leveltime - time > attack.endTime){
       currentAttackIndex++;
       time = millis();
       currentGravityIndex = 0;
-      currentGravity = currentBones[currentAttackIndex].gravitaty
+      currentGravity = currentBones[currentAttackIndex].gravitaty;
     }
-
-    print(player.y,currentGravity[currentGravityIndex].dy)
 
   }
 }
@@ -488,11 +487,11 @@ function displayPlayer(){
 }
 function movePlayer() {
   let gravitaty = currentGravity[currentGravityIndex];
-  if (gravitaty.mode == "off"){
-    stopDown()
-    stopUp()
-    stopLeft()
-    stopRight()
+  if (gravitaty.mode === "off"){
+    stopDown();
+    stopUp();
+    stopLeft();
+    stopRight();
   }
   else{
     if (gravitaty.accerlerationY < 0) {
@@ -501,28 +500,27 @@ function movePlayer() {
       for (let platform of currentPlatform) {
         if (
           player.y > platform.y &&
-          platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
-          platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
-          player.y - (heart.height * scaleOfPlayer) / 2 + gravitaty.dy < platform.y + platform.w / 2
+          platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
+          platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
+          player.y - heart.height * scaleOfPlayer / 2 + gravitaty.dy < platform.y + platform.w / 2
         ) {
           move = false;
           if (keyIsDown(83)){
             currentGravityIndex++;
-            // print("downnnnn", player.y, platform.y, gravitaty.dy)
           }
-          player.y = platform.y + platform.w / 2 + (heart.height * scaleOfPlayer) / 2;
+          player.y = platform.y + platform.w / 2 + heart.height * scaleOfPlayer / 2;
         }
       }
 
       if (keyIsDown(65)){
-        stopLeft()
+        stopLeft();
       }
       else if (keyIsDown(68)){
-        stopRight()
+        stopRight();
       }
 
       if (gravitaty.dy > 0 && !keyIsDown(83)){
-        gravitaty.dy = 0
+        gravitaty.dy = 0;
       }
 
       if (move) {
@@ -536,27 +534,27 @@ function movePlayer() {
       for (let platform of currentPlatform) {
         if (
           player.y < platform.y &&
-          platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
-          platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
-          player.y + (heart.height * scaleOfPlayer) / 2 + gravitaty.dy > platform.y - platform.w / 2
+          platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
+          platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
+          player.y + heart.height * scaleOfPlayer / 2 + gravitaty.dy > platform.y - platform.w / 2
         ) {
           move = false;
           if (keyIsDown(87)){
             currentGravityIndex++;
           }
-          player.y = platform.y - platform.w / 2 - (heart.height * scaleOfPlayer) / 2;
+          player.y = platform.y - platform.w / 2 - heart.height * scaleOfPlayer / 2;
         }
       }
       
       if (keyIsDown(65)){
-        stopLeft()
+        stopLeft();
       }
       else if (keyIsDown(68)){
-        stopRight()
+        stopRight();
       }
 
       if (gravitaty.dy < 0 && !keyIsDown(87)){
-        gravitaty.dy = 0
+        gravitaty.dy = 0;
       }
 
       if (move) {
@@ -570,27 +568,27 @@ function movePlayer() {
       for (let platform of currentPlatform) {
         if (
           player.x < platform.x &&
-          platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
-          platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
-          player.x + (heart.width * scaleOfPlayer) / 2 + gravitaty.dx > platform.x - platform.l / 2
+          platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
+          platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
+          player.x + heart.width * scaleOfPlayer / 2 + gravitaty.dx > platform.x - platform.l / 2
         ) {
           move = false;
           if (keyIsDown(65)){
             currentGravityIndex++;
           }
-          player.x = platform.x - platform.l / 2 - (heart.width * scaleOfPlayer) / 2;
+          player.x = platform.x - platform.l / 2 - heart.width * scaleOfPlayer / 2;
         }
       }
 
       if (keyIsDown(87)){
-        stopUp()
+        stopUp();
       }
       else if (keyIsDown(83)){
-        stopDown()
+        stopDown();
       }
 
       if (gravitaty.dx < 0 && !keyIsDown(65)){
-        gravitaty.dx = 0
+        gravitaty.dx = 0;
       }
 
       if (move) {
@@ -604,27 +602,27 @@ function movePlayer() {
       for (let platform of currentPlatform) {
         if (
           player.x > platform.x &&
-          platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
-          platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
-          player.x - (heart.width * scaleOfPlayer) / 2 + gravitaty.dx < platform.x + platform.l / 2
+          platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
+          platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
+          player.x - heart.width * scaleOfPlayer / 2 + gravitaty.dx < platform.x + platform.l / 2
         ) {
           move = false;
           if (keyIsDown(68)){
             currentGravityIndex++;
           }
-          player.x = platform.x + platform.l / 2 + (heart.width * scaleOfPlayer) / 2;
+          player.x = platform.x + platform.l / 2 + heart.width * scaleOfPlayer / 2;
         }
       }
       
       if (keyIsDown(87)){
-        stopUp()
+        stopUp();
       }
       else if (keyIsDown(83)){
-        stopDown()
+        stopDown();
       }
 
       if (gravitaty.dx > 0 && !keyIsDown(68)){
-        gravitaty.dx = 0
+        gravitaty.dx = 0;
       }
 
       if (move) {
@@ -644,12 +642,12 @@ function stopRight(){
     for (let platform of currentPlatform) {
       if (
         player.x < platform.x &&
-        platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
-        platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
-        player.x + (heart.width * scaleOfPlayer) / 2 + player.dx > platform.x - platform.l / 2
+        platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
+        platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
+        player.x + heart.width * scaleOfPlayer / 2 + player.dx > platform.x - platform.l / 2
       ) {
         move = false;
-        player.x = platform.x - platform.l / 2 - (heart.width * scaleOfPlayer) / 2;
+        player.x = platform.x - platform.l / 2 - heart.width * scaleOfPlayer / 2;
       }
     }
     if (move) {
@@ -664,12 +662,12 @@ function stopLeft(){
     for (let platform of currentPlatform) {
       if (
         player.x > platform.x &&
-        platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
-        platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
-        player.x - (heart.width * scaleOfPlayer) / 2 - player.dx < platform.x + platform.l / 2
+        platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
+        platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
+        player.x - heart.width * scaleOfPlayer / 2 - player.dx < platform.x + platform.l / 2
       ) {
         move = false;
-        player.x = platform.x + platform.l / 2 + (heart.width * scaleOfPlayer) / 2;
+        player.x = platform.x + platform.l / 2 + heart.width * scaleOfPlayer / 2;
       }
     }
     if (move) {
@@ -684,12 +682,12 @@ function stopUp(){
     for (let platform of currentPlatform) {
       if (
         player.y > platform.y &&
-        platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
-        platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
-        player.y - (heart.height * scaleOfPlayer) / 2 - player.dy < platform.y + platform.w / 2
+        platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
+        platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
+        player.y - heart.height * scaleOfPlayer / 2 - player.dy < platform.y + platform.w / 2
       ) {
         move = false;
-        player.y = platform.y + platform.w / 2 + (heart.height * scaleOfPlayer) / 2;
+        player.y = platform.y + platform.w / 2 + heart.height * scaleOfPlayer / 2;
       }
     }
     if (move) {
@@ -704,12 +702,12 @@ function stopDown(){
     for (let platform of currentPlatform) {
       if (
         player.y < platform.y &&
-        platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
-        platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
-        player.y + (heart.height * scaleOfPlayer) / 2 + player.dy > platform.y - platform.w / 2
+        platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
+        platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
+        player.y + heart.height * scaleOfPlayer / 2 + player.dy > platform.y - platform.w / 2
       ) {
         move = false;
-        player.y = platform.y - platform.w / 2 - (heart.height * scaleOfPlayer) / 2;
+        player.y = platform.y - platform.w / 2 - heart.height * scaleOfPlayer / 2;
       }
     }
     if (move) {
