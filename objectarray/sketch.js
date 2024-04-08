@@ -34,7 +34,7 @@ let player = {
   y: 0,
   dx: 0.005,
   dy: 0.005,
-  health: 44492,
+  health: 92,
 };
 
 function preload() {
@@ -321,6 +321,8 @@ function draw() {
   }
   else{
     background(0)
+    fill("white")
+    text("die",50,50)
   }
 }
 
