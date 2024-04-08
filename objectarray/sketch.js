@@ -9,12 +9,24 @@ let state = "starting screen";
 let modes = ["normal", "practice", "single attack", "endless"];
 let mode = 0;
 let level = 0;
-let bones = [];
 let scaleOfPlayer;
+let time;
 let inttailizedAready = "no";
+let damgeTime = 0;
+// let macroSpeed = 2.5 / 662 * height
 
+let platformOrder = {
+  top : 0,
+  left : 1,
+  down: 2,
+  right : 3,
+}
+
+let currentBones;
+let currentAttackIndex;
 let currentPlatform;
-let level1Platform;
+let currentGravity;
+let currentGravityIndex;
 
 let heart;
 let player = {
@@ -22,10 +34,15 @@ let player = {
   y: 0,
   dx: 0.005,
   dy: 0.005,
+  health: 44492,
 };
 
 function preload() {
   heart = loadImage("heart.png");
+  heartDown = loadImage("heartDown.png");
+  heartUp = loadImage("heartUp.png");
+  heartLeft = loadImage("heartLeft.png");
+  heartRight = loadImage("heartRight.png");
 }
 
 function setup() {
@@ -34,17 +51,250 @@ function setup() {
   player.dx = player.dx * height;
   player.dy = player.dy * height;
 
-  // level 1 platform
+  // level 1 
+
+  // platform
   let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.26 * height,w: 0.01 * height};
   let platform2={x: 0.375 * height,y: 0.625 * height,l: 0.01 * height,w: 0.26 * height};
   let platform3={x: 0.5 * height,y: 0.75 * height,l: 0.26 * height,w: 0.01 * height};
   let platform4={x: 0.625 * height,y: 0.625 * height,l: 0.01 * height,w: 0.26 * height};
-  // let platform1={x: 0.5,y: 0,l: 1,w: 0.025};
-  // let platform2={x: 0,y: 0.5,l: 0.025,w: 1};
-  // let platform3={x: 0.5,y: 1,l: 1,w: 0.025};
-  // let platform4={x: 1,y: 0.5,l: 0.025,w: 1};
-  level1Platform = [platform1,platform2,platform3,platform4];
+  // let platform1={x: 0.5,y: 0,l: 1,w: 0.025}; top
+  // let platform2={x: 0,y: 0.5,l: 0.025,w: 1}; left
+  // let platform3={x: 0.5,y: 1,l: 1,w: 0.025}; down
+  // let platform4={x: 1,y: 0.5,l: 0.025,w: 1}; right
+  let level1Platform = [platform1,platform2,platform3,platform4];
   currentPlatform = level1Platform
+
+  
+  // bones
+  // attack 1
+  // gravity
+  let gravitaty1 = {
+    mode: "on",
+    accerlerationX: 0,
+    dx: 0,
+    accerlerationY: 0.3 / 662 * height,
+    dy: 3 / 662 * height,
+  }
+
+  let gravitaty2 = {
+    mode: "on",
+    accerlerationX: 0,
+    dx: 0,
+    accerlerationY: 0.1 / 662 * height,
+    dy: -3.5 / 662 * height,
+  }
+
+  let gravitaty3 = {
+    mode: "off",
+    accerlerationX: 0.0,
+    dx: 0,
+    accerlerationY: 0,
+    dy: 0,
+  }
+
+  currentGravity = [gravitaty1, gravitaty2, gravitaty3]
+  currentGravityIndex = 0;
+
+  let attack1 = {
+    type: "tab",
+    reaction: 1000,
+    changeTime: 1200,
+    endTime: 3000,
+    damage: 7,
+    cooldown: 400,
+    direction: "down",
+    height: 0.08,
+    rectangleInfo: [],
+    gravitaty: structuredClone(currentGravity)
+  }
+
+  attack1.height = attack1.height * height
+  attack1.rectangleInfo = [
+    level1Platform[platformOrder.down].x,
+    level1Platform[platformOrder.down].y - level1Platform[platformOrder.down].w / 2 - attack1.height / 2,
+    level1Platform[platformOrder.down].l - level1Platform[platformOrder.left].l - level1Platform[platformOrder.right].l,
+    attack1.height
+  ]
+  currentAttackIndex = 0
+  currentBones = [attack1]
+  
+  // attack 2
+
+  for (let i = 0; i < 100; i++){
+
+    // random attack
+    let randomNumber = floor(random(4))
+    let directions = ["up", "down", "left", "right"]
+
+    // gravity
+    if (directions[randomNumber] == "down"){
+      let gravitaty4 = {
+        mode: "on",
+        accerlerationX: 0,
+        dx: 0,
+        accerlerationY: 0.3 / 662 * height,
+        dy: 3 / 662 * height,
+      }
+
+      let gravitaty5 = {
+        mode: "on",
+        accerlerationX: 0,
+        dx: 0,
+        accerlerationY: 0.1 / 662 * height,
+        dy: -3.5 / 662 * height,
+        dyOriginal: -3.5 / 662 * height,
+      }
+
+      let gravitaty6 = {
+        mode: "off",
+        accerlerationX: 0.0,
+        dx: 0,
+        accerlerationY: 0,
+        dy: 0,
+      }
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6]
+    }
+
+    if (directions[randomNumber] == "up"){
+      let gravitaty4 = {
+        mode: "on",
+        accerlerationX: 0,
+        dx: 0,
+        accerlerationY: -0.3 / 662 * height,
+        dy: -3 / 662 * height,
+      }
+
+      let gravitaty5 = {
+        mode: "on",
+        accerlerationX: 0,
+        dx: 0,
+        accerlerationY: -0.1 / 662 * height,
+        dy: 3.5 / 662 * height,
+        dyOriginal: 3.5 / 662 * height,
+      }
+
+      let gravitaty6 = {
+        mode: "off",
+        accerlerationX: 0.0,
+        dx: 0,
+        accerlerationY: 0,
+        dy: 0,
+      }
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6]
+    }
+
+    if (directions[randomNumber] == "right"){
+      let gravitaty4 = {
+        mode: "on",
+        accerlerationX: 0.3 / 662 * height,
+        dx: 3 / 662 * height,
+        accerlerationY: 0,
+        dy: 0,
+      }
+
+      let gravitaty5 = {
+        mode: "on",
+        accerlerationX: 0.1 / 662 * height,
+        dx: -3.5 / 662 * height,
+        dxOriginal: -3.5 / 662 * height,
+        accerlerationY: 0,
+        dy: 0,
+      }
+
+      let gravitaty6 = {
+        mode: "off",
+        accerlerationX: 0.0,
+        dx: 0,
+        accerlerationY: 0,
+        dy: 0,
+      }
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6]
+    }
+
+    if (directions[randomNumber] == "left"){
+      let gravitaty4 = {
+        mode: "on",
+        accerlerationX: -0.3 / 662 * height,
+        dx: -3 / 662 * height,
+        accerlerationY: 0,
+        dy: 0,
+      }
+
+      let gravitaty5 = {
+        mode: "on",
+        accerlerationX: -0.1 / 662 * height,
+        dx: 3.5 / 662 * height,
+        dxOriginal: 3.5 / 662 * height,
+        accerlerationY: 0,
+        dy: 0,
+      }
+
+      let gravitaty6 = {
+        mode: "off",
+        accerlerationX: 0.0,
+        dx: 0,
+        accerlerationY: 0,
+        dy: 0,
+      }
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6]
+    }
+
+    let attack2 = {
+      type: "tab",
+      reaction: 1000,
+      changeTime: 1300,
+      endTime: 1600,
+      damage: 3,
+      cooldown: 150,
+      direction: directions[randomNumber],
+      height: 0.02,
+      rectangleInfo: [],
+      gravitaty: structuredClone(currentGravity),
+    }
+
+    attack2.height = attack2.height * height
+    if (attack2.direction === "up"){
+      attack2.rectangleInfo = [
+      level1Platform[platformOrder.top].x,
+      level1Platform[platformOrder.top].y + level1Platform[platformOrder.down].w / 2 + attack2.height / 2,
+      level1Platform[platformOrder.top].l - level1Platform[platformOrder.left].l - level1Platform[platformOrder.right].l,
+      attack2.height
+      ];
+    }
+    if (attack2.direction === "down"){
+      attack2.rectangleInfo = [
+      level1Platform[platformOrder.down].x,
+      level1Platform[platformOrder.down].y - level1Platform[platformOrder.down].w / 2 - attack2.height / 2,
+      level1Platform[platformOrder.down].l - level1Platform[platformOrder.left].l - level1Platform[platformOrder.right].l,
+      attack2.height
+      ];
+    }
+    if (attack2.direction === "left"){
+      attack2.rectangleInfo = [
+      level1Platform[platformOrder.left].x + level1Platform[platformOrder.left].l / 2 + attack2.height / 2,
+      level1Platform[platformOrder.left].y,
+      attack2.height,
+      level1Platform[platformOrder.left].w - level1Platform[platformOrder.top].w - level1Platform[platformOrder.down].w
+      ];
+    }
+    if (attack2.direction === "right"){
+      attack2.rectangleInfo = [
+      level1Platform[platformOrder.right].x - level1Platform[platformOrder.right].l / 2 - attack2.height / 2,
+      level1Platform[platformOrder.right].y,
+      attack2.height,
+      level1Platform[platformOrder.right].w - level1Platform[platformOrder.top].w - level1Platform[platformOrder.down].w
+      ];
+    }
+    currentBones.push(attack2)
+  }
+
+  // attack last
+  let attackLast = {type: "next round"}
+  currentBones.push(attackLast)
+
+  currentGravity = [gravitaty1,gravitaty2,gravitaty3]
+  
 }
 
 function draw() {
@@ -52,16 +302,25 @@ function draw() {
   if (state === "starting screen"){
     drawStartScreen();
   }
-  else{
+  else if (state !== "death"){
     innit();
     displayBones();
     displayPlatorm();
-    displayPlayer();
     movePlayer();
+    displayPlayer();
+    text(player.health,50,50)
+    
+    if (player.health < 0){
+      state = "death"
+    }
+
     // fill("white");
     // line(player.x, 0, player.x, height);
     // line(0, player.y, width, player.y);
     // circle(player.x, player.y, heart.width * scaleOfPlayer)
+  }
+  else{
+    background(0)
   }
 }
 
@@ -129,35 +388,290 @@ function keyTyped(){
 function innit(){
   if(level === 1 && inttailizedAready == "no"){
     player.x = currentPlatform[2].x;
-    player.y = currentPlatform[2].y - currentPlatform[0].w / 2 - heart.height * scaleOfPlayer / 2;
+    player.y = currentPlatform[1].y;
     inttailizedAready = "yes"
+    time = millis();
   }
 }
 
 function displayBones(){
-  if (level === 1){
-    let i;
+  let leveltime = millis();
+  let attack = currentBones[currentAttackIndex];
+  if (attack.type === "tab"){
+    if (leveltime - time < attack.reaction){
+      rectMode(CENTER);
+      fill(0,150,0)
+      rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
+    }
+    else{
+      rectMode(CENTER);
+      fill(150,150,150)
+      rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
+      if (
+        player.x < attack.rectangleInfo[0] + attack.rectangleInfo[2] / 2 &&
+        player.x > attack.rectangleInfo[0] - attack.rectangleInfo[2] / 2 &&
+        player.y < attack.rectangleInfo[1] + attack.rectangleInfo[3] / 2 &&
+        player.y > attack.rectangleInfo[1] - attack.rectangleInfo[3] / 2 &&
+        damgeTime + attack.cooldown < leveltime){
+          player.health -= attack.damage
+          damgeTime = millis()
+      }
+      // text(damgeTime,100,50)
+      // text(attack.cooldown,100,150)
+      // text(leveltime,100,250)
+      // text(player.y > attack.rectangleInfo[1] - attack.rectangleInfo[3] / 2,100,350)
+      // text(damgeTime + attack.cooldown > leveltime,200,150)
+    }
+
+    if (leveltime - time > attack.changeTime){
+      currentGravityIndex = 2
+    }
+    else if(currentGravityIndex == 2){
+      currentGravityIndex--
+      // currentGravity[currentGravityIndex].dy = -3.5 / 662 * height;
+      if (attack.direction === "down" || currentGravity[currentGravityIndex].direction === "up"){
+        currentGravity[currentGravityIndex].dy = currentGravity[currentGravityIndex].dyOriginal;
+      }
+      if (attack.direction === "left" || currentGravity[currentGravityIndex].direction === "right"){
+        currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
+      }
+      // print(currentGravity[currentGravityIndex].dy)
+      // print(currentGravity[currentGravityIndex].dx)
+    }
+
+    if (leveltime - time > attack.endTime){
+      currentAttackIndex++;
+      time = millis();
+      currentGravity = currentBones[currentAttackIndex].gravitaty
+    }
+
   }
 }
 
 function displayPlatorm(){
   if (level === 1){
-    currentPlatform = level1Platform
     for (let platform of currentPlatform){
       rectMode(CENTER);
       fill("white");
       noStroke();
       rect(platform.x, platform.y, platform.l, platform.w);
-      rectMode(LEFT);
+    }
+  }
+} 
+function displayPlayer(){
+  let attack = currentBones[currentAttackIndex];
+  let gravitaty = currentGravity[currentGravityIndex];
+  if (gravitaty.mode === "off"){
+    image(heart, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+  }
+  else{
+    if (attack.direction === "down"){
+      image(heartDown, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    }
+    if (attack.direction === "up"){
+      image(heartUp, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    }
+    if (attack.direction === "left"){
+      image(heartLeft, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    }
+    if (attack.direction === "right"){
+      image(heartRight, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    }
+  }
+
+}
+function movePlayer() {
+  let gravitaty = currentGravity[currentGravityIndex];
+  if (gravitaty.mode == "off"){
+    stopDown()
+    stopUp()
+    stopLeft()
+    stopRight()
+  }
+  else{
+    if (gravitaty.accerlerationY < 0) {
+      //throw up
+      let move = true;
+      for (let platform of currentPlatform) {
+        if (
+          player.y > platform.y &&
+          platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
+          platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
+          player.y - (heart.height * scaleOfPlayer) / 2 + gravitaty.dy > platform.y - platform.w / 2
+        ) {
+          move = false;
+          if (keyIsDown(83)){
+            currentGravityIndex++;
+          }
+          print(gravitaty)
+          // player.y = platform.y + platform.w / 2 + (heart.height * scaleOfPlayer) / 2;
+        }
+      }
+
+      if (keyIsDown(65)){
+        stopLeft()
+      }
+      else if (keyIsDown(68)){
+        stopRight()
+      }
+
+      if (gravitaty.dy > 0 && !keyIsDown(83)){
+        gravitaty.dy = 0
+      }
+
+      if (move) {
+        player.y += gravitaty.dy;
+        gravitaty.dy += gravitaty.accerlerationY;
+      }
+    }
+    if (gravitaty.accerlerationY > 0) {
+      //s
+      let move = true;
+      for (let platform of currentPlatform) {
+        if (
+          player.y < platform.y &&
+          platform.x + platform.l / 2 > player.x - (heart.width * scaleOfPlayer) / 2 &&
+          platform.x - platform.l / 2 < player.x + (heart.width * scaleOfPlayer) / 2 &&
+          player.y + (heart.height * scaleOfPlayer) / 2 + gravitaty.dy > platform.y - platform.w / 2
+        ) {
+          move = false;
+          if (keyIsDown(87)){
+            currentGravityIndex++;
+          }
+          player.y = platform.y - platform.w / 2 - (heart.height * scaleOfPlayer) / 2;
+        }
+      }
+      
+      if (keyIsDown(65)){
+        stopLeft()
+      }
+      else if (keyIsDown(68)){
+        stopRight()
+      }
+
+      if (gravitaty.dy < 0 && !keyIsDown(87)){
+        gravitaty.dy = 0
+      }
+
+      if (move) {
+        player.y += gravitaty.dy;
+        gravitaty.dy += gravitaty.accerlerationY;
+      }
+    }
+    if (gravitaty.accerlerationX > 0) {
+      //d
+      let move = true;
+      for (let platform of currentPlatform) {
+        if (
+          player.x < platform.x &&
+          platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
+          platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
+          player.x + (heart.width * scaleOfPlayer) / 2 + gravitaty.dx > platform.x - platform.l / 2
+        ) {
+          move = false;
+          if (keyIsDown(65)){
+            currentGravityIndex++;
+          }
+          player.x = platform.x - platform.l / 2 - (heart.width * scaleOfPlayer) / 2;
+        }
+      }
+
+      if (keyIsDown(87)){
+        stopUp()
+      }
+      else if (keyIsDown(83)){
+        stopDown()
+      }
+
+      if (gravitaty.dx < 0 && !keyIsDown(65)){
+        gravitaty.dx = 0
+      }
+
+      if (move) {
+        player.x += gravitaty.dx;
+        gravitaty.dx += gravitaty.accerlerationX;
+      }
+    }
+    if (gravitaty.accerlerationX < 0) {
+      //a
+      let move = true;
+      for (let platform of currentPlatform) {
+        if (
+          player.x > platform.x &&
+          platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
+          platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
+          player.x - (heart.width * scaleOfPlayer) / 2 + gravitaty.dx < platform.x + platform.l / 2
+        ) {
+          move = false;
+          if (keyIsDown(68)){
+            currentGravityIndex++;
+          }
+          player.x = platform.x + platform.l / 2 + (heart.width * scaleOfPlayer) / 2;
+        }
+      }
+      
+      if (keyIsDown(87)){
+        stopUp()
+      }
+      else if (keyIsDown(83)){
+        stopDown()
+      }
+
+      if (gravitaty.dx > 0 && !keyIsDown(68)){
+        gravitaty.dx = 0
+      }
+
+      if (move) {
+        player.x += gravitaty.dx;
+        gravitaty.dx += gravitaty.accerlerationX;
+      }
     }
   }
 }
 
-function displayPlayer(){
-  image(heart, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-}
 
-function movePlayer() {
+
+function stopRight(){
+  if (keyIsDown(68)){
+    //d
+    let move = true;
+    for (let platform of currentPlatform) {
+      if (
+        player.x < platform.x &&
+        platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
+        platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
+        player.x + (heart.width * scaleOfPlayer) / 2 + player.dx > platform.x - platform.l / 2
+      ) {
+        move = false;
+        player.x = platform.x - platform.l / 2 - (heart.width * scaleOfPlayer) / 2;
+      }
+    }
+    if (move) {
+      player.x += player.dx;
+    }
+  }  
+}
+function stopLeft(){
+  if (keyIsDown(65)) {
+    //a
+    let move = true;
+    for (let platform of currentPlatform) {
+      if (
+        player.x > platform.x &&
+        platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
+        platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
+        player.x - (heart.width * scaleOfPlayer) / 2 - player.dx < platform.x + platform.l / 2
+      ) {
+        move = false;
+        player.x = platform.x + platform.l / 2 + (heart.width * scaleOfPlayer) / 2;
+      }
+    }
+    if (move) {
+      player.x -= player.dx;
+    }
+  }
+}
+function stopUp(){
   if (keyIsDown(87)) {
     //w
     let move = true;
@@ -175,7 +689,9 @@ function movePlayer() {
     if (move) {
       player.y -= player.dy;
     }
-  }
+  }  
+}
+function stopDown(){
   if (keyIsDown(83)) {
     //s
     let move = true;
@@ -194,103 +710,5 @@ function movePlayer() {
       player.y += player.dy;
     }
   }
-  if (keyIsDown(68)) {
-    //d
-    let move = true;
-    for (let platform of currentPlatform) {
-      if (
-        player.x < platform.x &&
-        platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
-        platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
-        player.x + (heart.width * scaleOfPlayer) / 2 + player.dx > platform.x - platform.l / 2
-      ) {
-        move = false;
-        player.x = platform.x - platform.l / 2 - (heart.width * scaleOfPlayer) / 2;
-      }
-    }
-    if (move) {
-      player.x += player.dx;
-    }
-  }
-  if (keyIsDown(65)) {
-    //a
-    let move = true;
-    for (let platform of currentPlatform) {
-      if (
-        player.x > platform.x &&
-        platform.y + platform.w / 2 > player.y - (heart.height * scaleOfPlayer) / 2 &&
-        platform.y - platform.w / 2 < player.y + (heart.height * scaleOfPlayer) / 2 &&
-        player.x - (heart.width * scaleOfPlayer) / 2 - player.dx < platform.x + platform.l / 2
-      ) {
-        move = false;
-        player.x = platform.x + platform.l / 2 + (heart.width * scaleOfPlayer) / 2;
-      }
-      // text(player.x < platform.x,50,50);
-      // text(platform.y + platform.w / 2 < player.y - (heart.height * scaleOfPlayer) / 2,150,platform.y);
-      // text(platform.y - platform.w / 2 > player.y + (heart.height * scaleOfPlayer),250,50);
-      // text(player.x + (heart.width * scaleOfPlayer) / 2 + player.dx > platform.x - platform.l / 2,350,50);
-    }
-    if (move) {
-      player.x -= player.dx;
-    }
-  }
 }
 
-
-
-// let y;
-// let dx = 2;
-// let dy = 2;
-// let mario;
-// let scalar = 1.0;
-
-// function preload() {
-//   mario = loadImage("mario.png");
-// }
-
-// function setup() {
-//   createCanvas(400, 400);
-  
-//   x = width/2;
-//   y = height/2;
-// }
-
-// function draw() {
-//   background(220);
-  
-//   moveBall();
-  
-//   //display circle
-//   // circle(x, y, 25);
-  
-//   //display mario
-//   image(mario, x, y, mario.width * scalar, mario.height * scalar);
-// }
-
-// function mouseWheel(event) {
-//   // console.log(event.delta);
-//   if (event.delta < 0) {
-//     console.log("make it bigger");
-//     scalar *= 1.1;
-//   }
-//   else {
-//     console.log("make it smaller");
-//     scalar *= 0.9;
-//   }
-  
-// }
-
-// function moveBall() {
-//   if (keyIsDown(87)) { //w
-//     y -= dy;
-//   }
-//   if (keyIsDown(83)) { //s
-//     y += dy;
-//   }
-//   if (keyIsDown(68)) { //d
-//     x += dx;
-//   }
-//   if (keyIsDown(65)) { //a
-//     x -= dx;
-//   }
-// }
