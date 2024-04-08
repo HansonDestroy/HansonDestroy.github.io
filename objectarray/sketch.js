@@ -133,8 +133,8 @@ function setup() {
         mode: "on",
         accerlerationX: 0,
         dx: 0,
-        accerlerationY: 0.3 / 662 * height,
-        dy: 3 / 662 * height,
+        accerlerationY: 0.5 / 662 * height,
+        dy: 5 / 662 * height,
       }
 
       let gravitaty5 = {
@@ -161,8 +161,8 @@ function setup() {
         mode: "on",
         accerlerationX: 0,
         dx: 0,
-        accerlerationY: -0.3 / 662 * height,
-        dy: -3 / 662 * height,
+        accerlerationY: -0.5 / 662 * height,
+        dy: -5 / 662 * height,
       }
 
       let gravitaty5 = {
@@ -187,8 +187,8 @@ function setup() {
     if (directions[randomNumber] == "right"){
       let gravitaty4 = {
         mode: "on",
-        accerlerationX: 0.3 / 662 * height,
-        dx: 3 / 662 * height,
+        accerlerationX: 0.5 / 662 * height,
+        dx: 5 / 662 * height,
         accerlerationY: 0,
         dy: 0,
       }
@@ -215,8 +215,8 @@ function setup() {
     if (directions[randomNumber] == "left"){
       let gravitaty4 = {
         mode: "on",
-        accerlerationX: -0.3 / 662 * height,
-        dx: -3 / 662 * height,
+        accerlerationX: -0.5 / 662 * height,
+        dx: -5 / 662 * height,
         accerlerationY: 0,
         dy: 0,
       }
@@ -242,9 +242,9 @@ function setup() {
 
     let attack2 = {
       type: "tab",
-      reaction: 10000,
-      changeTime: 13000,
-      endTime: 16000,
+      reaction: 700,
+      changeTime: 1000,
+      endTime: 1300,
       damage: 3,
       cooldown: 150,
       direction: directions[randomNumber],
@@ -429,11 +429,10 @@ function displayBones(){
     else if(currentGravityIndex == 2){
       currentGravityIndex--
       // currentGravity[currentGravityIndex].dy = -3.5 / 662 * height;
-      if (attack.direction === "down" || currentGravity[currentGravityIndex].direction === "up"){
+      if (attack.direction === "down" || attack.direction === "up"){
         currentGravity[currentGravityIndex].dy = currentGravity[currentGravityIndex].dyOriginal;
       }
-      if (attack.direction === "left" || currentGravity[currentGravityIndex].direction === "right"){
-        // print(currentGravity[currentGravityIndex],attack.direction)
+      if (attack.direction === "left" || attack.direction === "right"){
         currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
       }
       // print(currentGravity[currentGravityIndex],attack.direction)
@@ -445,6 +444,8 @@ function displayBones(){
       time = millis();
       currentGravity = currentBones[currentAttackIndex].gravitaty
     }
+
+    print(player.y,currentGravity[currentGravityIndex].dy)
 
   }
 }
@@ -503,6 +504,7 @@ function movePlayer() {
           move = false;
           if (keyIsDown(83)){
             currentGravityIndex++;
+            // print("downnnnn", player.y, platform.y, gravitaty.dy)
           }
           player.y = platform.y + platform.w / 2 + (heart.height * scaleOfPlayer) / 2;
         }
