@@ -242,9 +242,9 @@ function setup() {
 
     let attack2 = {
       type: "tab",
-      reaction: 1000,
-      changeTime: 1300,
-      endTime: 1600,
+      reaction: 10000,
+      changeTime: 13000,
+      endTime: 16000,
       damage: 3,
       cooldown: 150,
       direction: directions[randomNumber],
@@ -433,9 +433,10 @@ function displayBones(){
         currentGravity[currentGravityIndex].dy = currentGravity[currentGravityIndex].dyOriginal;
       }
       if (attack.direction === "left" || currentGravity[currentGravityIndex].direction === "right"){
+        // print(currentGravity[currentGravityIndex],attack.direction)
         currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
       }
-      print(currentGravityIndex)
+      // print(currentGravity[currentGravityIndex],attack.direction)
       // print(currentGravity[currentGravityIndex].dx)
     }
 
@@ -501,7 +502,6 @@ function movePlayer() {
         ) {
           move = false;
           if (keyIsDown(83)){
-            print(currentGravityIndex)
             currentGravityIndex++;
           }
           player.y = platform.y + platform.w / 2 + (heart.height * scaleOfPlayer) / 2;
