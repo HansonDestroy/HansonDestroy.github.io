@@ -181,8 +181,10 @@ function keyTyped(){
     action--;
   }
   if (key === " " && state === "action time"){
-    // text("total reset",250,50)
-    //level ++
+    console.log("total reset")
+    level++
+    inttailizedAready = "no"
+    takeAction()
   } 
   action = action % actions.length;
 }
@@ -433,6 +435,11 @@ function displayPlayer(){
   }
 }
 
+function takeAction(){
+  if (level === 1){
+    loadLevel1All();
+  }
+}
 
 function loadLevel1All(){
   // level 1
@@ -504,7 +511,7 @@ function loadLevel1All(){
   
   // attack 2
 
-  for (let i = 0; i < 10; i++){
+  for (let i = 0; i < 13; i++){
 
     // random attack
     let randomNumber = floor(random(4));
