@@ -65,11 +65,11 @@ function setup() {
     {word: "item", positionX: 0.6 * height, positionY: 0.835 * height},
     {word: "spare", positionX: 0.85 * height, positionY: 0.835 * height}];
   
-    // // music
+  // // music
   // megalovania.jump(0);
   // megalovania.play();
   // megalovania.setLoop(true);
-  startMusic = true
+  startMusic = true;
   
   loadLevel1All();  
 }
@@ -93,12 +93,12 @@ function draw() {
       state = "death";
     }
     
-    textAlign(LEFT)
+    textAlign(LEFT);
     for (let i = 0; i < 4; i++){
-      text(actions[i].word,actions[i].positionX,actions[i].positionY)
+      text(actions[i].word,actions[i].positionX,actions[i].positionY);
     }
     if (currentBones[currentAttackIndex].type === "next round"){
-      state = "action time"
+      state = "action time";
       // text("advance level",250,50)
       // temppp
     }
@@ -181,10 +181,10 @@ function keyTyped(){
     action--;
   }
   if (key === " " && state === "action time"){
-    console.log("total reset")
-    level++
-    inttailizedAready = "no"
-    takeAction()
+    console.log("total reset");
+    level++;
+    inttailizedAready = "no";
+    takeAction();
   } 
   action = action % actions.length;
 }
