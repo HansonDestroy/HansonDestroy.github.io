@@ -8,13 +8,14 @@
 let state = "starting screen";
 let modes = ["normal", "practice", "single attack", "endless"];
 let mode = 0;
-let actions = ["fight", "act", "item", "spare"]
+let actions = [];
 let action = 0;
 let level = 0;
 let scaleOfPlayer;
 let time;
 let inttailizedAready = "no";
 let damgeTime = 0;
+let startMusic = false;
 
 let platformOrder = {
   top : 0,
@@ -58,11 +59,17 @@ function setup() {
   scaleOfPlayer = 0.000045 * width;
   player.dx = player.dx * height;
   player.dy = player.dy * height;
-
-  // // music
+  actions = [
+    {word: "fight", positionX: 0.1 * height, positionY: 0.835 * height},
+    {word: "act", positionX: 0.35 * height, positionY: 0.835 * height},
+    {word: "item", positionX: 0.6 * height, positionY: 0.835 * height},
+    {word: "spare", positionX: 0.85 * height, positionY: 0.835 * height}];
+  
+    // // music
   // megalovania.jump(0);
   // megalovania.play();
   // megalovania.setLoop(true);
+  startMusic = true
   
   loadLevel1All();  
 }
@@ -80,13 +87,20 @@ function draw() {
     displayPlayer();
 
     text(player.health,50,50);
+    rect(300,50,player.health*2,30);
+
     if (player.health < 0){
       state = "death";
     }
     
+    textAlign(LEFT)
+    for (let i = 0; i < 4; i++){
+      text(actions[i].word,actions[i].positionX,actions[i].positionY)
+    }
     if (currentBones[currentAttackIndex].type === "next round"){
-      background(0)
-      text("advance level",50,50)
+      state = "action time"
+      // text("advance level",250,50)
+      // temppp
     }
 
     // fill("white");
@@ -158,6 +172,19 @@ function keyTyped(){
     scaleOfPlayer = 0.000045 * height;
   } 
   mode = mode % modes.length;
+
+  if (key === "d" && state === "action time"){
+    action++;
+  }
+  if (key === "a" && state === "action time"){
+    action += modes.length;
+    action--;
+  }
+  if (key === " " && state === "action time"){
+    // text("total reset",250,50)
+    //level ++
+  } 
+  action = action % actions.length;
 }
 function innit(){
   if(level === 1 && inttailizedAready === "no"){
@@ -224,174 +251,188 @@ function displayPlatorm(){
   }
 }
 function movePlayer() {
-  let gravitaty = currentGravity[currentGravityIndex];
-  if (gravitaty.mode === "off"){
-    stopDown();
-    stopUp();
-    stopLeft();
-    stopRight();
+
+  if (currentBones[currentAttackIndex].type === "next round"){
+    // temppppppppp
+    player.x = actions[action].positionX;
+    player.y = actions[action].positionY;
   }
   else{
-    if (gravitaty.accerlerationY < 0) {
-      //throw up
-      let move = true;
-      for (let platform of currentPlatform) {
-        if (
-          player.y > platform.y &&
-          platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
-          platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
-          player.y - heart.height * scaleOfPlayer / 2 + gravitaty.dy < platform.y + platform.w / 2
-        ) {
-          move = false;
-          if (keyIsDown(83)){
-            currentGravityIndex++;
-          }
-          player.y = platform.y + platform.w / 2 + heart.height * scaleOfPlayer / 2;
-        }
-      }
-
-      if (keyIsDown(65)){
-        stopLeft();
-      }
-      else if (keyIsDown(68)){
-        stopRight();
-      }
-
-      if (gravitaty.dy > 0 && !keyIsDown(83)){
-        gravitaty.dy = 0;
-      }
-
-      if (move) {
-        player.y += gravitaty.dy;
-        gravitaty.dy += gravitaty.accerlerationY;
-      }
+    let gravitaty = currentGravity[currentGravityIndex];
+    if(gravitaty.mode === "off"){
+      stopDown();
+      stopUp();
+      stopLeft();
+      stopRight();
     }
-    if (gravitaty.accerlerationY > 0) {
-      //s
-      let move = true;
-      for (let platform of currentPlatform) {
-        if (
-          player.y < platform.y &&
-          platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
-          platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
-          player.y + heart.height * scaleOfPlayer / 2 + gravitaty.dy > platform.y - platform.w / 2
-        ) {
-          move = false;
-          if (keyIsDown(87)){
-            currentGravityIndex++;
+    else{
+      if (gravitaty.accerlerationY < 0) {
+        //throw up
+        let move = true;
+        for (let platform of currentPlatform) {
+          if (
+            player.y > platform.y &&
+            platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
+            platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
+            player.y - heart.height * scaleOfPlayer / 2 + gravitaty.dy < platform.y + platform.w / 2
+          ) {
+            move = false;
+            if (keyIsDown(83)){
+              currentGravityIndex++;
+            }
+            player.y = platform.y + platform.w / 2 + heart.height * scaleOfPlayer / 2;
           }
-          player.y = platform.y - platform.w / 2 - heart.height * scaleOfPlayer / 2;
+        }
+
+        if (keyIsDown(65)){
+          stopLeft();
+        }
+        else if (keyIsDown(68)){
+          stopRight();
+        }
+
+        if (gravitaty.dy > 0 && !keyIsDown(83)){
+          gravitaty.dy = 0;
+        }
+
+        if (move) {
+          player.y += gravitaty.dy;
+          gravitaty.dy += gravitaty.accerlerationY;
         }
       }
       
-      if (keyIsDown(65)){
-        stopLeft();
-      }
-      else if (keyIsDown(68)){
-        stopRight();
-      }
-
-      if (gravitaty.dy < 0 && !keyIsDown(87)){
-        gravitaty.dy = 0;
-      }
-
-      if (move) {
-        player.y += gravitaty.dy;
-        gravitaty.dy += gravitaty.accerlerationY;
-      }
-    }
-    if (gravitaty.accerlerationX > 0) {
-      //d
-      let move = true;
-      for (let platform of currentPlatform) {
-        if (
-          player.x < platform.x &&
-          platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
-          platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
-          player.x + heart.width * scaleOfPlayer / 2 + gravitaty.dx > platform.x - platform.l / 2
-        ) {
-          move = false;
-          if (keyIsDown(65)){
-            currentGravityIndex++;
+      if (gravitaty.accerlerationY > 0) {
+        //s
+        let move = true;
+        for (let platform of currentPlatform) {
+          if (
+            player.y < platform.y &&
+            platform.x + platform.l / 2 > player.x - heart.width * scaleOfPlayer / 2 &&
+            platform.x - platform.l / 2 < player.x + heart.width * scaleOfPlayer / 2 &&
+            player.y + heart.height * scaleOfPlayer / 2 + gravitaty.dy > platform.y - platform.w / 2
+          ) {
+            move = false;
+            player.y = platform.y - platform.w / 2 - heart.height * scaleOfPlayer / 2;
+            if (keyIsDown(87)){
+              currentGravityIndex++;
+            }
           }
-          player.x = platform.x - platform.l / 2 - heart.width * scaleOfPlayer / 2;
         }
-      }
+        
+        if (keyIsDown(65)){
+          stopLeft();
+        }
+        else if (keyIsDown(68)){
+          stopRight();
+        }
 
-      if (keyIsDown(87)){
-        stopUp();
-      }
-      else if (keyIsDown(83)){
-        stopDown();
-      }
+        if (gravitaty.dy < 0 && !keyIsDown(87)){
+          gravitaty.dy = 0;
+        }
 
-      if (gravitaty.dx < 0 && !keyIsDown(65)){
-        gravitaty.dx = 0;
-      }
-
-      if (move) {
-        player.x += gravitaty.dx;
-        gravitaty.dx += gravitaty.accerlerationX;
-      }
-    }
-    if (gravitaty.accerlerationX < 0) {
-      //a
-      let move = true;
-      for (let platform of currentPlatform) {
-        if (
-          player.x > platform.x &&
-          platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
-          platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
-          player.x - heart.width * scaleOfPlayer / 2 + gravitaty.dx < platform.x + platform.l / 2
-        ) {
-          move = false;
-          if (keyIsDown(68)){
-            currentGravityIndex++;
-          }
-          player.x = platform.x + platform.l / 2 + heart.width * scaleOfPlayer / 2;
+        if (move) {
+          player.y += gravitaty.dy;
+          gravitaty.dy += gravitaty.accerlerationY;
         }
       }
       
-      if (keyIsDown(87)){
-        stopUp();
-      }
-      else if (keyIsDown(83)){
-        stopDown();
-      }
+      if (gravitaty.accerlerationX > 0) {
+        //d
+        let move = true;
+        for (let platform of currentPlatform) {
+          if (
+            player.x < platform.x &&
+            platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
+            platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
+            player.x + heart.width * scaleOfPlayer / 2 + gravitaty.dx > platform.x - platform.l / 2
+          ) {
+            move = false;
+            if (keyIsDown(65)){
+              currentGravityIndex++;
+            }
+            player.x = platform.x - platform.l / 2 - heart.width * scaleOfPlayer / 2;
+          }
+        }
 
-      if (gravitaty.dx > 0 && !keyIsDown(68)){
-        gravitaty.dx = 0;
-      }
+        if (keyIsDown(87)){
+          stopUp();
+        }
+        else if (keyIsDown(83)){
+          stopDown();
+        }
 
-      if (move) {
-        player.x += gravitaty.dx;
-        gravitaty.dx += gravitaty.accerlerationX;
+        if (gravitaty.dx < 0 && !keyIsDown(65)){
+          gravitaty.dx = 0;
+        }
+        if (move) {
+          player.x += gravitaty.dx;
+          gravitaty.dx += gravitaty.accerlerationX;
+        }
+      }
+      if (gravitaty.accerlerationX < 0) {
+        //a
+        let move = true;
+        for (let platform of currentPlatform) {
+          if (
+            player.x > platform.x &&
+            platform.y + platform.w / 2 > player.y - heart.height * scaleOfPlayer / 2 &&
+            platform.y - platform.w / 2 < player.y + heart.height * scaleOfPlayer / 2 &&
+            player.x - heart.width * scaleOfPlayer / 2 + gravitaty.dx < platform.x + platform.l / 2
+          ) {
+            move = false;
+            if (keyIsDown(68)){
+              currentGravityIndex++;
+            }
+            player.x = platform.x + platform.l / 2 + heart.width * scaleOfPlayer / 2;
+          }
+        }
+        
+        if (keyIsDown(87)){
+          stopUp();
+        }
+        else if (keyIsDown(83)){
+          stopDown();
+        }
+
+        if (gravitaty.dx > 0 && !keyIsDown(68)){
+          gravitaty.dx = 0;
+        }
+
+        if (move) {
+          player.x += gravitaty.dx;
+          gravitaty.dx += gravitaty.accerlerationX;
+        }
       }
     }
   }
 }
 function displayPlayer(){
-  let attack = currentBones[currentAttackIndex];
-  let gravitaty = currentGravity[currentGravityIndex];
-  if (gravitaty.mode === "off"){
+  if (currentBones[currentAttackIndex].type === "next round"){
     image(heart, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
   }
   else{
-    if (attack.direction === "down"){
-      image(heartDown, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    let attack = currentBones[currentAttackIndex];
+    let gravitaty = currentGravity[currentGravityIndex];
+    if (gravitaty.mode === "off"){
+      image(heart, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
     }
-    if (attack.direction === "up"){
-      image(heartUp, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-    }
-    if (attack.direction === "left"){
-      image(heartLeft, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
-    }
-    if (attack.direction === "right"){
-      image(heartRight, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+    else{
+      if (attack.direction === "down"){
+        image(heartDown, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+      }
+      if (attack.direction === "up"){
+        image(heartUp, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+      }
+      if (attack.direction === "left"){
+        image(heartLeft, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+      }
+      if (attack.direction === "right"){
+        image(heartRight, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
+      }
     }
   }
-
 }
+
 
 function loadLevel1All(){
   // level 1
@@ -424,6 +465,7 @@ function loadLevel1All(){
     dx: 0,
     accerlerationY: 0.1 / 662 * height,
     dy: -3.5 / 662 * height,
+    dyOriginal: -3.5 / 662 * height,
   };
 
   let gravitaty3 = {
@@ -462,7 +504,7 @@ function loadLevel1All(){
   
   // attack 2
 
-  for (let i = 0; i < 4; i++){
+  for (let i = 0; i < 10; i++){
 
     // random attack
     let randomNumber = floor(random(4));
@@ -720,7 +762,9 @@ function stopDown(){
 }
 
 function mouseReleased(){
-  megalovania.jump(0);
-  megalovania.play();
-  megalovania.setLoop(true);
+  if (startMusic){
+    megalovania.jump(0);
+    megalovania.play();
+    megalovania.setLoop(true);
+  }
 }
