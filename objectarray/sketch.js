@@ -195,6 +195,12 @@ function innit(){
     inttailizedAready = "yes";
     time = millis();
   }
+  if(level === 2 && inttailizedAready === "no"){
+    player.x = currentPlatform[2].x;
+    player.y = currentPlatform[2].y - currentPlatform[2].w / 2 - heart.height * scaleOfPlayer / 2;
+    inttailizedAready = "yes";
+    time = millis();
+  }
 }
 function displayBones(){
   let leveltime = millis();
@@ -243,13 +249,11 @@ function displayBones(){
   }
 }
 function displayPlatorm(){
-  if (level === 1){
-    for (let platform of currentPlatform){
-      rectMode(CENTER);
-      fill("white");
-      noStroke();
-      rect(platform.x, platform.y, platform.l, platform.w);
-    }
+  for (let platform of currentPlatform){
+    rectMode(CENTER);
+    fill("white");
+    noStroke();
+    rect(platform.x, platform.y, platform.l, platform.w);
   }
 }
 function movePlayer() {
@@ -439,6 +443,9 @@ function takeAction(){
   if (level === 1){
     loadLevel1All();
   }
+  if (level === 2){
+    loadLevel2All();
+  }
 }
 
 function loadLevel1All(){
@@ -511,7 +518,7 @@ function loadLevel1All(){
   
   // attack 2
 
-  for (let i = 0; i < 13; i++){
+  for (let i = 0; i < 6; i++){
 
     // random attack
     let randomNumber = floor(random(4));
@@ -674,6 +681,252 @@ function loadLevel1All(){
         level1Platform[platformOrder.right].y,
         attack2.height,
         level1Platform[platformOrder.right].w - level1Platform[platformOrder.top].w - level1Platform[platformOrder.down].w
+      ];
+    }
+    currentBones.push(attack2);
+  }
+
+  // attack last
+  let attackLast = {type: "next round"};
+  currentBones.push(attackLast);
+
+  currentGravity = [gravitaty1,gravitaty2,gravitaty3];
+  
+}
+
+function loadLevel2All(){
+  // level 2
+  // platform
+  let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.51 * height,w: 0.01 * height};
+  let platform2={x: 0.25 * height,y: 0.625 * height,l: 0.01 * height,w: 0.26 * height};
+  let platform3={x: 0.5 * height,y: 0.75 * height,l: 0.51 * height,w: 0.01 * height};
+  let platform4={x: 0.75 * height,y: 0.625 * height,l: 0.01 * height,w: 0.26 * height};
+  // let platform1={x: 0.5,y: 0,l: 1,w: 0.025}; top
+  // let platform2={x: 0,y: 0.5,l: 0.025,w: 1}; left
+  // let platform3={x: 0.5,y: 1,l: 1,w: 0.025}; down
+  // let platform4={x: 1,y: 0.5,l: 0.025,w: 1}; right
+  let level2Platform = [platform1,platform2,platform3,platform4];
+  currentPlatform = level2Platform;
+
+  // bones
+  // attack 1
+  // gravity
+  let gravitaty1 = {
+    mode: "on",
+    accerlerationX: 0,
+    dx: 0,
+    accerlerationY: 0.3 / 662 * height,
+    dy: 3 / 662 * height,
+  };
+
+  let gravitaty2 = {
+    mode: "on",
+    accerlerationX: 0,
+    dx: 0,
+    accerlerationY: 0.1 / 662 * height,
+    dy: -3.5 / 662 * height,
+    dyOriginal: -3.5 / 662 * height,
+  };
+
+  let gravitaty3 = {
+    mode: "off",
+    accerlerationX: 0.0,
+    dx: 0,
+    accerlerationY: 0,
+    dy: 0,
+  };
+
+  currentGravity = [gravitaty1, gravitaty2, gravitaty3];
+  currentGravityIndex = 0;
+
+  let attack1 = {
+    type: "tab",
+    reaction: 1000,
+    changeTime: 1200,
+    endTime: 3000,
+    damage: 7,
+    cooldown: 400,
+    direction: "down",
+    height: 0.08,
+    rectangleInfo: [],
+    gravitaty: structuredClone(currentGravity)
+  };
+
+  attack1.height = attack1.height * height;
+  attack1.rectangleInfo = [
+    level2Platform[platformOrder.down].x,
+    level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack1.height / 2,
+    level2Platform[platformOrder.down].l - level2Platform[platformOrder.left].l - level2Platform[platformOrder.right].l,
+    attack1.height
+  ];
+  currentAttackIndex = 0;
+  currentBones = [attack1];
+  
+  // attack 2
+
+  for (let i = 0; i < 6; i++){
+
+    // random attack
+    let randomNumber = floor(random(4));
+    let directions = ["up", "down", "left", "right"];
+
+    // gravity
+    if (directions[randomNumber] === "down"){
+      let gravitaty4 = {
+        mode: "on",
+        accerlerationX: 0,
+        dx: 0,
+        accerlerationY: 0.5 / 662 * height,
+        dy: 5 / 662 * height,
+      };
+
+      let gravitaty5 = {
+        mode: "on",
+        accerlerationX: 0,
+        dx: 0,
+        accerlerationY: 0.1 / 662 * height,
+        dy: -3.5 / 662 * height,
+        dyOriginal: -3.5 / 662 * height,
+      };
+
+      let gravitaty6 = {
+        mode: "off",
+        accerlerationX: 0.0,
+        dx: 0,
+        accerlerationY: 0,
+        dy: 0,
+      };
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6];
+    }
+
+    if (directions[randomNumber] === "up"){
+      let gravitaty4 = {
+        mode: "on",
+        accerlerationX: 0,
+        dx: 0,
+        accerlerationY: -0.9 / 662 * height,
+        dy: -9 / 662 * height,
+      };
+
+      let gravitaty5 = {
+        mode: "on",
+        accerlerationX: 0,
+        dx: 0,
+        accerlerationY: -0.1 / 662 * height,
+        dy: 3.5 / 662 * height,
+        dyOriginal: 3.5 / 662 * height,
+      };
+
+      let gravitaty6 = {
+        mode: "off",
+        accerlerationX: 0.0,
+        dx: 0,
+        accerlerationY: 0,
+        dy: 0,
+      };
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6];
+    }
+
+    if (directions[randomNumber] === "right"){
+      let gravitaty4 = {
+        mode: "on",
+        accerlerationX: 0.9 / 662 * height,
+        dx: 9 / 662 * height,
+        accerlerationY: 0,
+        dy: 0,
+      };
+
+      let gravitaty5 = {
+        mode: "on",
+        accerlerationX: 0.1 / 662 * height,
+        dx: -3.5 / 662 * height,
+        dxOriginal: -3.5 / 662 * height,
+        accerlerationY: 0,
+        dy: 0,
+      };
+
+      let gravitaty6 = {
+        mode: "off",
+        accerlerationX: 0.0,
+        dx: 0,
+        accerlerationY: 0,
+        dy: 0,
+      };
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6];
+    }
+
+    if (directions[randomNumber] === "left"){
+      let gravitaty4 = {
+        mode: "on",
+        accerlerationX: -0.9 / 662 * height,
+        dx: -9 / 662 * height,
+        accerlerationY: 0,
+        dy: 0,
+      };
+
+      let gravitaty5 = {
+        mode: "on",
+        accerlerationX: -0.1 / 662 * height,
+        dx: 3.5 / 662 * height,
+        dxOriginal: 3.5 / 662 * height,
+        accerlerationY: 0,
+        dy: 0,
+      };
+
+      let gravitaty6 = {
+        mode: "off",
+        accerlerationX: 0.0,
+        dx: 0,
+        accerlerationY: 0,
+        dy: 0,
+      };
+      currentGravity = [gravitaty4,gravitaty5,gravitaty6];
+    }
+
+    let attack2 = {
+      type: "tab",
+      reaction: 700,
+      changeTime: 1000,
+      endTime: 1300,
+      damage: 3,
+      cooldown: 150,
+      direction: directions[randomNumber],
+      height: 0.02,
+      rectangleInfo: [],
+      gravitaty: structuredClone(currentGravity),
+    };
+
+    attack2.height = attack2.height * height;
+    if (attack2.direction === "up"){
+      attack2.rectangleInfo = [
+        level2Platform[platformOrder.top].x,
+        level2Platform[platformOrder.top].y + level2Platform[platformOrder.down].w / 2 + attack2.height / 2,
+        level2Platform[platformOrder.top].l - level2Platform[platformOrder.left].l - level2Platform[platformOrder.right].l,
+        attack2.height
+      ];
+    }
+    if (attack2.direction === "down"){
+      attack2.rectangleInfo = [
+        level2Platform[platformOrder.down].x,
+        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.height / 2,
+        level2Platform[platformOrder.down].l - level2Platform[platformOrder.left].l - level2Platform[platformOrder.right].l,
+        attack2.height
+      ];
+    }
+    if (attack2.direction === "left"){
+      attack2.rectangleInfo = [
+        level2Platform[platformOrder.left].x + level2Platform[platformOrder.left].l / 2 + attack2.height / 2,
+        level2Platform[platformOrder.left].y,
+        attack2.height,
+        level2Platform[platformOrder.left].w - level2Platform[platformOrder.top].w - level2Platform[platformOrder.down].w
+      ];
+    }
+    if (attack2.direction === "right"){
+      attack2.rectangleInfo = [
+        level2Platform[platformOrder.right].x - level2Platform[platformOrder.right].l / 2 - attack2.height / 2,
+        level2Platform[platformOrder.right].y,
+        attack2.height,
+        level2Platform[platformOrder.right].w - level2Platform[platformOrder.top].w - level2Platform[platformOrder.down].w
       ];
     }
     currentBones.push(attack2);
