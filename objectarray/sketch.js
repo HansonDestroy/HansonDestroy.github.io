@@ -248,7 +248,7 @@ function displayBones(){
 
   }
   if (attack.type === "gap"){
-    if (true){
+    if (state !== "dsfkad;lfksal;dkasdfk;slakdf;lak"){
       rectMode(CENTER);
       fill(150,150,150);
       rect(attack.rectangleInfo[0][0],attack.rectangleInfo[0][1],attack.rectangleInfo[0][2],attack.rectangleInfo[0][3]);
@@ -494,7 +494,7 @@ function takeAction(){
   }
 }
 
-function loadLevel1All(){
+function loadLevel2All(){
   // level 1
   // platform
   let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.26 * height,w: 0.01 * height};
@@ -740,7 +740,7 @@ function loadLevel1All(){
   
 }
 
-function loadLevel2All(){
+function loadLevel1All(){
   // level 2
   // platform
   let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.51 * height,w: 0.01 * height};
@@ -812,7 +812,7 @@ function loadLevel2All(){
 
   for (let i = 0; i < 6; i++){
 
-    let randomNumber = 1
+    let randomNumber = 1;
     let directions = ["up", "down", "left", "right"];
 
     // gravity
@@ -936,7 +936,7 @@ function loadLevel2All(){
       endTime: 1300,
       gapHeight: 0.15,
       gapWidth: 0.04,
-      gapDifference: 0.08,
+      gapDifference: 0.12,
       damage: 3,
       cooldown: 50,
       direction: directions[randomNumber],
@@ -946,60 +946,60 @@ function loadLevel2All(){
 
     attack2.gapHeight = attack2.gapHeight * (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w);
     attack2.gapDifference = attack2.gapDifference * (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w);
-    attack2.gapWidth = attack2.gapWidth * (level2Platform[platformOrder.down].l - level2Platform[platformOrder.left].l - level2Platform[platformOrder.right].l)
+    attack2.gapWidth = attack2.gapWidth * (level2Platform[platformOrder.down].l - level2Platform[platformOrder.left].l - level2Platform[platformOrder.right].l);
     if (attack2.direction === "down"){
       attack2.rectangleInfo = [
         [
-        level2Platform[platformOrder.left].x - 109,
-        level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + level2Platform[platformOrder.left].w / 2 - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w - attack2.gapHeight / 2 - attack2.gapDifference / 2,
-        attack2.gapWidth,
-        level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference
+          level2Platform[platformOrder.left].x - 0,
+          level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + level2Platform[platformOrder.left].w / 2 - level2Platform[platformOrder.down].w / 2 - level2Platform[platformOrder.top].w / 2 - attack2.gapHeight / 2 - attack2.gapDifference / 2,
+          attack2.gapWidth,
+          level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference
         ],
         [
-        level2Platform[platformOrder.left].x - 109,
-        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
-        attack2.gapWidth,
-        attack2.gapHeight
+          level2Platform[platformOrder.left].x - 0,
+          level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+          attack2.gapWidth,
+          attack2.gapHeight
         ],
         [
-        level2Platform[platformOrder.right].x - 109,
-        level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + level2Platform[platformOrder.left].w / 2 - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w - attack2.gapHeight / 2 - attack2.gapDifference / 2,
-        attack2.gapWidth,
-        level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference
+          level2Platform[platformOrder.right].x - 0,
+          level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + level2Platform[platformOrder.left].w / 2 - level2Platform[platformOrder.down].w / 2 - level2Platform[platformOrder.top].w / 2 - attack2.gapHeight / 2 - attack2.gapDifference / 2,
+          attack2.gapWidth,
+          level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference
         ],
         [
-        level2Platform[platformOrder.right].x - 109,
-        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
-        attack2.gapWidth,
-        attack2.gapHeight
+          level2Platform[platformOrder.right].x - 0,
+          level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+          attack2.gapWidth,
+          attack2.gapHeight
         ]
       ];
     }
     if (attack2.direction === "up"){
       attack2.rectangleInfo = [
         [
-        level2Platform[platformOrder.left].x - 109,
-        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
-        attack2.gapWidth,
-        attack2.gapHeight
+          level2Platform[platformOrder.left].x - 0,
+          level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+          attack2.gapWidth,
+          attack2.gapHeight
         ],
         [
-        level2Platform[platformOrder.left].x - 109,
-        level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference,
-        attack2.gapWidth,
-        attack2.gapHeight
+          level2Platform[platformOrder.left].x - 0,
+          level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference,
+          attack2.gapWidth,
+          attack2.gapHeight
         ],
         [
-        level2Platform[platformOrder.right].x - 109,
-        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
-        attack2.gapWidth,
-        attack2.gapHeight
+          level2Platform[platformOrder.right].x - 0,
+          level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+          attack2.gapWidth,
+          attack2.gapHeight
         ],
         [
-        level2Platform[platformOrder.right].x - 109,
-        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
-        attack2.gapWidth,
-        attack2.gapHeight
+          level2Platform[platformOrder.right].x - 0,
+          level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+          attack2.gapWidth,
+          attack2.gapHeight
         ]
       ];
     }

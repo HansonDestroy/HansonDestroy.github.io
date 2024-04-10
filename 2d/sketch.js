@@ -28,7 +28,7 @@ function setup() {
 
 function draw() {
   // background(220);
-  displaygrid
+  displaygrid();
 }
 
 function generateRandomGrid(c,r){
@@ -55,6 +55,22 @@ function displaygrid(){
 function mouseReleased(){
   // generateRandomGrid(GRID_SIZE,GRID_SIZE);
   // displaygrid();
-  grid[floor(mouseX/cell),floor(mouseY/cell)] += 1;
-  // grid[floor(mouseX/cell),floor(mouseY/cell)] = mod grid[floor(mouseX/cell),floor(mouseY/cell)]
+  grid[floor(mouseY/cell)][floor(mouseX/cell)] += 1;
+  grid[floor(mouseY/cell)][floor(mouseX/cell)] = grid[floor(mouseY/cell)][floor(mouseX/cell)] % 2;
+  if(floor(mouseX/cell) - 1 > -1){
+    grid[floor(mouseY/cell)][floor(mouseX/cell)-1] += 1;
+    grid[floor(mouseY/cell)][floor(mouseX/cell)-1] = grid[floor(mouseY/cell)][floor(mouseX/cell)-1] % 2;
+  }
+  if(floor(mouseX/cell) + 1 < grid[0].length){
+    grid[floor(mouseY/cell)][floor(mouseX/cell)+1] += 1;
+    grid[floor(mouseY/cell)][floor(mouseX/cell)+1] = grid[floor(mouseY/cell)][floor(mouseX/cell)+1] % 2;
+  }
+  if(floor(mouseY/cell) - 1 > -1){
+    grid[floor(mouseY/cell)-1][floor(mouseX/cell)] += 1;
+    grid[floor(mouseY/cell)-1][floor(mouseX/cell)] = grid[floor(mouseY/cell)-1][floor(mouseX/cell)] % 2;
+  }
+  if(floor(mouseY/cell) + 1 < grid.length){
+    grid[floor(mouseY/cell)+1][floor(mouseX/cell)] += 1;
+    grid[floor(mouseY/cell)+1][floor(mouseX/cell)] = grid[floor(mouseY/cell)+1][floor(mouseX/cell)] % 2;
+  }
 }
