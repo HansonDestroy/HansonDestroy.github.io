@@ -247,6 +247,51 @@ function displayBones(){
     }
 
   }
+  if (attack.type === "gap"){
+    if (true){
+      rectMode(CENTER);
+      fill(150,150,150);
+      rect(attack.rectangleInfo[0][0],attack.rectangleInfo[0][1],attack.rectangleInfo[0][2],attack.rectangleInfo[0][3]);
+      rect(attack.rectangleInfo[1][0],attack.rectangleInfo[1][1],attack.rectangleInfo[1][2],attack.rectangleInfo[1][3]);
+      rect(attack.rectangleInfo[2][0],attack.rectangleInfo[2][1],attack.rectangleInfo[2][2],attack.rectangleInfo[2][3]);
+      rect(attack.rectangleInfo[3][0],attack.rectangleInfo[3][1],attack.rectangleInfo[3][2],attack.rectangleInfo[3][3]);
+    }
+    else{
+      rectMode(CENTER);
+      fill(150,150,150);
+      rect(attack.rectangleInfo[0],attack.rectangleInfo[1],attack.rectangleInfo[2],attack.rectangleInfo[3]);
+      if (
+        player.x < attack.rectangleInfo[0] + attack.rectangleInfo[2] / 2 &&
+        player.x > attack.rectangleInfo[0] - attack.rectangleInfo[2] / 2 &&
+        player.y < attack.rectangleInfo[1] + attack.rectangleInfo[3] / 2 &&
+        player.y > attack.rectangleInfo[1] - attack.rectangleInfo[3] / 2 &&
+        damgeTime + attack.cooldown < leveltime) {
+        player.health -= attack.damage;
+        damgeTime = millis();
+      }
+    }
+
+    if (leveltime - time > attack.changeTime){
+      currentGravityIndex = 2;
+    }
+    else if(currentGravityIndex === 2){
+      currentGravityIndex--;
+      if (attack.direction === "down" || attack.direction === "up"){
+        currentGravity[currentGravityIndex].dy = currentGravity[currentGravityIndex].dyOriginal;
+      }
+      if (attack.direction === "left" || attack.direction === "right"){
+        currentGravity[currentGravityIndex].dx = currentGravity[currentGravityIndex].dxOriginal;
+      }
+    }
+
+    if (leveltime - time > attack.endTime){
+      currentAttackIndex++;
+      time = millis();
+      currentGravityIndex = 0;
+      currentGravity = currentBones[currentAttackIndex].gravitaty;
+    }
+
+  }
 }
 function displayPlatorm(){
   for (let platform of currentPlatform){
@@ -412,6 +457,7 @@ function movePlayer() {
     }
   }
 }
+
 function displayPlayer(){
   if (currentBones[currentAttackIndex].type === "next round"){
     image(heart, player.x, player.y, heart.width * scaleOfPlayer, heart.height * scaleOfPlayer);
@@ -766,8 +812,7 @@ function loadLevel2All(){
 
   for (let i = 0; i < 6; i++){
 
-    // random attack
-    let randomNumber = floor(random(4));
+    let randomNumber = 1
     let directions = ["up", "down", "left", "right"];
 
     // gravity
@@ -798,7 +843,6 @@ function loadLevel2All(){
       };
       currentGravity = [gravitaty4,gravitaty5,gravitaty6];
     }
-
     if (directions[randomNumber] === "up"){
       let gravitaty4 = {
         mode: "on",
@@ -826,7 +870,6 @@ function loadLevel2All(){
       };
       currentGravity = [gravitaty4,gravitaty5,gravitaty6];
     }
-
     if (directions[randomNumber] === "right"){
       let gravitaty4 = {
         mode: "on",
@@ -854,7 +897,6 @@ function loadLevel2All(){
       };
       currentGravity = [gravitaty4,gravitaty5,gravitaty6];
     }
-
     if (directions[randomNumber] === "left"){
       let gravitaty4 = {
         mode: "on",
@@ -883,52 +925,100 @@ function loadLevel2All(){
       currentGravity = [gravitaty4,gravitaty5,gravitaty6];
     }
 
+    currentGravity = [gravitaty1, gravitaty2, gravitaty3];
+    currentGravityIndex = 0;
+
     let attack2 = {
-      type: "tab",
+      type: "gap",
       reaction: 700,
-      changeTime: 1000,
+      boneSpeedLeft: 1000,
+      boneSpeedRight: 1000,
       endTime: 1300,
+      gapHeight: 0.15,
+      gapWidth: 0.08,
+      gapDifference: 0.08,
       damage: 3,
-      cooldown: 150,
+      cooldown: 50,
       direction: directions[randomNumber],
-      height: 0.02,
       rectangleInfo: [],
       gravitaty: structuredClone(currentGravity),
     };
 
-    attack2.height = attack2.height * height;
-    if (attack2.direction === "up"){
-      attack2.rectangleInfo = [
-        level2Platform[platformOrder.top].x,
-        level2Platform[platformOrder.top].y + level2Platform[platformOrder.down].w / 2 + attack2.height / 2,
-        level2Platform[platformOrder.top].l - level2Platform[platformOrder.left].l - level2Platform[platformOrder.right].l,
-        attack2.height
-      ];
-    }
+    attack2.gapHeight = attack2.gapHeight * (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w);
+    attack2.gapDifference = attack2.gapDifference * (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w);
+    attack2.gapWidth = attack2.gapWidth * (level2Platform[platformOrder.down].l - level2Platform[platformOrder.left].l - level2Platform[platformOrder.right].l)
     if (attack2.direction === "down"){
       attack2.rectangleInfo = [
-        level2Platform[platformOrder.down].x,
-        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.height / 2,
-        level2Platform[platformOrder.down].l - level2Platform[platformOrder.left].l - level2Platform[platformOrder.right].l,
-        attack2.height
+        [
+        level2Platform[platformOrder.left].x - 169,
+        level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + level2Platform[platformOrder.left].w / 2 - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w - attack2.gapHeight / 2 - attack2.gapDifference / 2,
+        attack2.gapWidth,
+        level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference
+        ],
+        [
+        level2Platform[platformOrder.left].x - 169,
+        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+        attack2.gapWidth,
+        attack2.gapHeight
+        ],
+        [
+        level2Platform[platformOrder.right].x - 169,
+        level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + level2Platform[platformOrder.left].w / 2 - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w - attack2.gapHeight / 2 - attack2.gapDifference / 2,
+        attack2.gapWidth,
+        level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference
+        ],
+        [
+        level2Platform[platformOrder.right].x - 169,
+        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+        attack2.gapWidth,
+        attack2.gapHeight
+        ]
       ];
     }
-    if (attack2.direction === "left"){
+    if (attack2.direction === "up"){
       attack2.rectangleInfo = [
-        level2Platform[platformOrder.left].x + level2Platform[platformOrder.left].l / 2 + attack2.height / 2,
-        level2Platform[platformOrder.left].y,
-        attack2.height,
-        level2Platform[platformOrder.left].w - level2Platform[platformOrder.top].w - level2Platform[platformOrder.down].w
+        [
+        level2Platform[platformOrder.left].x - 169,
+        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+        attack2.gapWidth,
+        attack2.gapHeight
+        ],
+        [
+        level2Platform[platformOrder.left].x - 169,
+        level2Platform[platformOrder.top].y + level2Platform[platformOrder.top].w / 2 + (level2Platform[platformOrder.left].w - level2Platform[platformOrder.down].w - level2Platform[platformOrder.top].w) - attack2.gapHeight - attack2.gapDifference,
+        attack2.gapWidth,
+        attack2.gapHeight
+        ],
+        [
+        level2Platform[platformOrder.right].x - 169,
+        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+        attack2.gapWidth,
+        attack2.gapHeight
+        ],
+        [
+        level2Platform[platformOrder.right].x - 169,
+        level2Platform[platformOrder.down].y - level2Platform[platformOrder.down].w / 2 - attack2.gapHeight / 2,
+        attack2.gapWidth,
+        attack2.gapHeight
+        ]
       ];
     }
-    if (attack2.direction === "right"){
-      attack2.rectangleInfo = [
-        level2Platform[platformOrder.right].x - level2Platform[platformOrder.right].l / 2 - attack2.height / 2,
-        level2Platform[platformOrder.right].y,
-        attack2.height,
-        level2Platform[platformOrder.right].w - level2Platform[platformOrder.top].w - level2Platform[platformOrder.down].w
-      ];
-    }
+    // if (attack2.direction === "left"){
+    //   attack2.rectangleInfo = [
+    //     level2Platform[platformOrder.left].x + level2Platform[platformOrder.left].l / 2 + attack2.height / 2,
+    //     level2Platform[platformOrder.left].y,
+    //     attack2.height,
+    //     level2Platform[platformOrder.left].w - level2Platform[platformOrder.top].w - level2Platform[platformOrder.down].w
+    //   ];
+    // }
+    // if (attack2.direction === "right"){
+    //   attack2.rectangleInfo = [
+    //     level2Platform[platformOrder.right].x - level2Platform[platformOrder.right].l / 2 - attack2.height / 2,
+    //     level2Platform[platformOrder.right].y,
+    //     attack2.height,
+    //     level2Platform[platformOrder.right].w - level2Platform[platformOrder.top].w - level2Platform[platformOrder.down].w
+    //   ];
+    // }
     currentBones.push(attack2);
   }
 
