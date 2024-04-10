@@ -494,7 +494,7 @@ function takeAction(){
   }
 }
 
-function loadLevel2All(){
+function loadLevel1All(){
   // level 1
   // platform
   let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.26 * height,w: 0.01 * height};
@@ -740,7 +740,7 @@ function loadLevel2All(){
   
 }
 
-function loadLevel1All(){
+function loadLevel2All(){
   // level 2
   // platform
   let platform1={x: 0.5 * height,y: 0.5 * height,l: 0.51 * height,w: 0.01 * height};
