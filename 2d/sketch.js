@@ -14,6 +14,8 @@ let grid  = [
   [0,0,0,1]
 ];
 
+let mode = 1;
+
 let cell = 50;
 const GRID_SIZE = 10;
 
@@ -21,7 +23,11 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   generateRandomGrid(GRID_SIZE,GRID_SIZE);
 
-  cell = height/ grid.length;
+  let smallWH = min(width,height);
+
+  cell = smallWH/ grid.length;
+
+
   displaygrid();
 }
 
@@ -57,20 +63,37 @@ function mouseReleased(){
   // displaygrid();
   grid[floor(mouseY/cell)][floor(mouseX/cell)] += 1;
   grid[floor(mouseY/cell)][floor(mouseX/cell)] = grid[floor(mouseY/cell)][floor(mouseX/cell)] % 2;
-  if(floor(mouseX/cell) - 1 > -1){
-    grid[floor(mouseY/cell)][floor(mouseX/cell)-1] += 1;
-    grid[floor(mouseY/cell)][floor(mouseX/cell)-1] = grid[floor(mouseY/cell)][floor(mouseX/cell)-1] % 2;
+  if (mode === 1){
+    if(floor(mouseX/cell) - 1 > -1){
+      grid[floor(mouseY/cell)][floor(mouseX/cell)-1] += 1;
+      grid[floor(mouseY/cell)][floor(mouseX/cell)-1] = grid[floor(mouseY/cell)][floor(mouseX/cell)-1] % 2;
+    }
+    if(floor(mouseX/cell) + 1 < grid[0].length){
+      grid[floor(mouseY/cell)][floor(mouseX/cell)+1] += 1;
+      grid[floor(mouseY/cell)][floor(mouseX/cell)+1] = grid[floor(mouseY/cell)][floor(mouseX/cell)+1] % 2;
+    }
+    if(floor(mouseY/cell) - 1 > -1){
+      grid[floor(mouseY/cell)-1][floor(mouseX/cell)] += 1;
+      grid[floor(mouseY/cell)-1][floor(mouseX/cell)] = grid[floor(mouseY/cell)-1][floor(mouseX/cell)] % 2;
+    }
+    if(floor(mouseY/cell) + 1 < grid.length){
+      grid[floor(mouseY/cell)+1][floor(mouseX/cell)] += 1;
+      grid[floor(mouseY/cell)+1][floor(mouseX/cell)] = grid[floor(mouseY/cell)+1][floor(mouseX/cell)] % 2;
+    }
   }
-  if(floor(mouseX/cell) + 1 < grid[0].length){
-    grid[floor(mouseY/cell)][floor(mouseX/cell)+1] += 1;
-    grid[floor(mouseY/cell)][floor(mouseX/cell)+1] = grid[floor(mouseY/cell)][floor(mouseX/cell)+1] % 2;
+
+}
+
+function keyTyped(){
+  mode++;
+  mode = mode % 2;
+}
+
+function mini(a,b){
+  if (a<b){
+    return a;
   }
-  if(floor(mouseY/cell) - 1 > -1){
-    grid[floor(mouseY/cell)-1][floor(mouseX/cell)] += 1;
-    grid[floor(mouseY/cell)-1][floor(mouseX/cell)] = grid[floor(mouseY/cell)-1][floor(mouseX/cell)] % 2;
-  }
-  if(floor(mouseY/cell) + 1 < grid.length){
-    grid[floor(mouseY/cell)+1][floor(mouseX/cell)] += 1;
-    grid[floor(mouseY/cell)+1][floor(mouseX/cell)] = grid[floor(mouseY/cell)+1][floor(mouseX/cell)] % 2;
+  else{
+    return b;
   }
 }

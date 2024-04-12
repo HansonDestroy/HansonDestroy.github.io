@@ -1,9 +1,13 @@
 // Sans Boss fight from Undertale
-// Your Name
+// Hanson
 // Date
 //
 // Extra for Experts:
 // search bad time simulator on google and play the game so you know what I'm I trying to clone here
+// I added music that would play when mouse is clicked
+// I technically have 2d arrays because in the currentBones array there is a list of attacks and in each attack there is a list of gravities
+// it will always fit the screen's size
+
 
 let state = "starting screen";
 let modes = ["normal", "practice", "single attack", "endless"];
