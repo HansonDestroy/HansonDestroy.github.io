@@ -13,15 +13,21 @@
 //             [0, 1, 0, 1],
 //             [0, 0, 0, 1]];
 
-let grid;
+let grid = {
+  minePlace: [],
+  mineNeighbour: [],
+  mineState: [],
+};
 let cellSize;
-const GRID_SIZE = 5;
+let gridSize = 5;
+let mineNumber = 3;
 let toggleStyle = "self";
-let bgm;
-let state = "start";
+let isAutoPlayOn = false;
+let gosperGun;
+
 
 function preload(){
-  bgm = loadSound("TownTheme.mp3");
+  // gosperGun = loadJSON("gosper.json");
 }
 
 function setup() {
@@ -34,12 +40,12 @@ function setup() {
   }
 
   //if randomizing the grid, do this:
-  grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
+  grid.minePlace = generateRandomGrid(gridSize, gridSize, mineNumber);
   
+  //close initailly
+  grid.mineState = generateEmptyGrid(gridSize, gridSize);
   //this is dumb -- should check if this is the right size!
-  cellSize = height/grid.length;
-
-  bgm.setVolume(1.0);
+  cellSize = height/grid.minePlace.length;
 }
 
 function windowResized() {
@@ -51,29 +57,26 @@ function windowResized() {
     resizeCanvas(windowHeight, windowHeight);
   }
 
-  cellSize = height/grid.length;
+  cellSize = height/grid.minePlace.length;
 }
 
 function draw() {
-  if (state === "start"){
-    background(0);
+
+  displayGrid();
+  
+  if (isAutoPlayOn) {
+    grid.minePlace = updateGrid();
   }
-  else{
-    background(220);
-    displayGrid();
-    if((frameCount % 5 === 4)){
-      upDateGrid();
-    }
-  }
+
 }
 
 function keyPressed() {
   if (key === "r") {
-    grid = generateRandomGrid(GRID_SIZE, GRID_SIZE);
+    grid.minePlace = generateRandomGrid(gridSize, gridSize, mineNumber);
   }
 
   if (key === "e") {
-    grid = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
+    grid.minePlace = generateEmptyGrid(gridSize, gridSize);
   }
 
   if (key === "n") {
@@ -84,60 +87,64 @@ function keyPressed() {
     toggleStyle = "self";
   }
 
-  if (key === "p"){
-    upDateGrid();
+  if (key === " ") {
+    grid.minePlace = updateGrid();
   }
-  if (state === "start"){
-    state = "game";
-    bgm.play();
+
+  if (key === "a") {
+    isAutoPlayOn = !isAutoPlayOn;
   }
 }
 
-function upDateGrid(){
-  // let nextTurn = generateEmptyGrid(GRID_SIZE, GRID_SIZE);
-  let nextTurn = generateRandomGrid(GRID_SIZE, GRID_SIZE);
+function updateGrid() {
+  //need a second array, so I don't mess with the grid while counting neighbours
+  let neghbourGrid = generateEmptyGrid(gridSize, gridSize);
 
-  for(let y = 0; y < GRID_SIZE; y++){
-    for(let x = 0; x < GRID_SIZE; x++){
+  //look at every cell
+  for (let y = 0; y < gridSize; y++) {
+    for (let x = 0; x < gridSize; x++) {
+      neghbourGrid[y][x] = 0;
+      
+      //don't count yourself in the neighbours
+      // neghbourGrid[y][x] -= grid[y][x];
 
-      nextTurn[y][x] = 0 - grid[y][x];
-
-      // for(let i = -1; i < 2; i++){
-      //   for(let j = -1; j < 2; j++){
-      //     if(y + i < GRID_SIZE && y + i > 0 && x + j < GRID_SIZE && x + j > 0){
-      //       nextTurn[y][x] += grid[y+i,x+j];
-      //     }
-      //   }
-      // }
-
-      print(nextTurn,grid,y,x,grid[y][x])
-
-      if (grid[y][x] === 1){
-        if(nextTurn[y][x] === 3 || nextTurn[y][x] === 2){
-          nextTurn[y][x] = 1;
-        }
-        else{
-          nextTurn[y][x] = 0;
+      //look at every cell in a 3x3 grid around the cell
+      for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+          //avoid going off the edge of the grid
+          if (x+j >= 0 && x+j < gridSize && y+i >= 0 && y+i < gridSize) {
+            neghbourGrid[y][x] += grid.minePlace[y + i][x + j];
+          }
         }
       }
-      else{
-        if(nextTurn[y][x] === 3){
-          nextTurn[y][x] = 1;
+      
+      //apply the rules
+      if (grid.minePlace[y][x] === 1) { //currently alive
+        neghbourGrid[y][x] = -1;
+        if (grid.mineState[y][x] === 0){
+          fill("red");
+          textSize(20);
+          text(neghbourGrid[y][x], x * height / gridSize, (y+1) * height / gridSize);
         }
-        else{
-          nextTurn[y][x] = 0;
-        }
+
       }
 
+
+      if (grid.minePlace[y][x] === 0) { //currently dead
+        if (grid.mineState[y][x] === 0){
+          fill("blue ");
+          textSize(20);
+          text(neghbourGrid[y][x], x * height / gridSize, (y+1) * height / gridSize);
+        }
+      }
+        
     }
   }
 
-  
-  // grid = structuredClone(nextTurn);
-
-
-
+  grid.mineNeighbour = structuredClone(neghbourGrid);
+  return grid.minePlace;
 }
+
 
 function mousePressed() {
   let x = Math.floor(mouseX/cellSize);
@@ -157,22 +164,22 @@ function mousePressed() {
 
 function toggleCell(x, y) {
   // make sure the cell you're toggling is in the grid...
-  if (x < GRID_SIZE && y < GRID_SIZE &&
+  if (x < gridSize && y < gridSize &&
       x >= 0 && y >= 0) {
     //toggle the color of the cell
-    if (grid[y][x] === 0) {
-      grid[y][x] = 1;
+    if (grid.minePlace[y][x] === 0) {
+      grid.minePlace[y][x] = 1;
     }
     else {
-      grid[y][x] = 0;
+      grid.minePlace[y][x] = 0;
     }
   }
 }
 
 function displayGrid() {
-  for (let y = 0; y < grid.length; y++) {
-    for (let x = 0; x < grid[y].length; x++) {
-      if (grid[y][x] === 1) {
+  for (let y = 0; y < grid.minePlace.length; y++) {
+    for (let x = 0; x < grid.minePlace[y].length; x++) {
+      if (grid.minePlace[y][x] === 1) {
         fill("black");
       }
       else {
@@ -183,20 +190,25 @@ function displayGrid() {
   }
 }
 
-function generateRandomGrid(cols, rows) {
-  let emptyArray = [];
-  for (let y = 0; y < rows; y++) {
-    emptyArray.push([]);
-    for (let x = 0; x < cols; x++) {
-      //half the time, be a 1. Other half, be a 0.
-      if (random(100) < 50) {
-        emptyArray[y].push(0);
-      }
-      else {
-        emptyArray[y].push(1);
+function generateRandomGrid(cols, rows, mineNumber) {
+  let emptyArray = generateEmptyGrid(cols, rows);
+
+  if (rows * cols < mineNumber){
+    return emptyArray;
+  }
+
+  for (let mine = 0; mine < mineNumber; mine++){
+    let shouldRepeat = true;
+    while(shouldRepeat){
+      let x = floor(random(rows));
+      let y = floor(random(cols));
+      if (emptyArray[y][x] === 0){
+        emptyArray[y][x] = 1;
+        shouldRepeat = false;
       }
     }
   }
+
   return emptyArray;
 }
 
