@@ -131,19 +131,25 @@ function updateGrid() {
 
 
 function mousePressed() {
-  let x = Math.floor(mouseX/cellSize);
-  let y = Math.floor(mouseY/cellSize);
-
-  //toggle self
-  toggleCell(x, y);
-
-  // and NESW neighbours, if style is set to neighbours
-  if (toggleStyle === "neighbours") {
-    toggleCell(x + 1, y);
-    toggleCell(x - 1, y);
-    toggleCell(x, y + 1);
-    toggleCell(x, y - 1);
+  if (state === "start screen" || state === "death"){
+    print("music")
   }
+  if (state === "game"){
+    let x = Math.floor(mouseX/cellSize);
+    let y = Math.floor(mouseY/cellSize);
+
+    //toggle self
+    toggleCell(x, y);
+
+    // and NESW neighbours, if style is set to neighbours
+    if (toggleStyle === "neighbours") {
+      toggleCell(x + 1, y);
+      toggleCell(x - 1, y);
+      toggleCell(x, y + 1);
+      toggleCell(x, y - 1);
+    }
+  }
+  
 }
 
 function toggleCell(x, y) {
