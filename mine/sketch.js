@@ -20,12 +20,13 @@ let grid = {
 };
 let cellSize;
 let gridSize = 25;
-let mineNumber = 83;
+let mineNumber = 99;
 let toggleStyle = "normal";
 let isAutoPlayOn = true;
 let gosperGun;
 let state = "start screen";
 let sizeOfText = 0;
+let firstClick = true;
 
 function preload() {
   // gosperGun = loadJSON("gosper.json");
@@ -81,7 +82,14 @@ function draw() {
   if (state === "death"){
     background("red");
     textAlign(CENTER,CENTER);
+    fill("green");
     text("death", width/2, height/2);
+  }
+  if (state === "win"){
+    background("red");
+    textAlign(CENTER,CENTER);
+    fill("green");
+    text("win", width/2, height/2);
   }
 }
 
@@ -91,7 +99,12 @@ function keyPressed() {
   }
   else{
     if (key === "r") {
+      //if randomizing the grid, do this:
       grid.minePlace = generateRandomGrid(gridSize, gridSize, mineNumber);
+      //close initailly
+      grid.mineState = generateEmptyGrid(gridSize, gridSize);
+      //update neibour array
+      grid.minePlace = updateGridNeighbour();
     }
 
     if (key === "e") {
@@ -124,6 +137,7 @@ function updateGridNeighbour() {
   //need a second array, so I don't mess with the grid while counting neighbours
   let neghbourGrid = generateEmptyGrid(gridSize, gridSize);
 
+  let safes = 0; 
   //look at every cell
   for (let y = 0; y < gridSize; y++) {
     for (let x = 0; x < gridSize; x++) {
@@ -152,9 +166,15 @@ function updateGridNeighbour() {
         //currently alive
         neghbourGrid[y][x] = -1;
       }
+      else if(grid.mineState[y][x] === 1){
+        safes++;
+      }
     }
   }
 
+  if (gridSize * gridSize - mineNumber === safes){
+    state = "win";
+  }
   grid.mineNeighbour = structuredClone(neghbourGrid);
   return grid.minePlace;
 }
@@ -207,9 +227,26 @@ function mousePressed() {
     let y = Math.floor(mouseY / cellSize);
 
     if (toggleStyle === "normal") {
+      while (firstClick){
+        if (grid.mineNeighbour[y][x] === 0){
+          firstClick = false;
+        }
+        else{
+          //if randomizing the grid, do this:
+          grid.minePlace = generateRandomGrid(gridSize, gridSize, mineNumber);
+          //close initailly
+          grid.mineState = generateEmptyGrid(gridSize, gridSize);
+          //update neibour array
+          grid.minePlace = updateGridNeighbour();
+        }
+      }
       grid.mineState[y][x] = 1;
       if (grid.minePlace[y][x] === 1){
         state = "death";
+      }
+      if (grid.mineNeighbour[y][x] === 0){
+        grid.mineState[y][x] = 0;
+        autofillZero(y,x);
       }
     }
     else {
@@ -224,6 +261,30 @@ function mousePressed() {
         toggleCell(x, y - 1);
       }
     }
+  }
+}
+
+function autofillZero(y,x){
+  print("filling", y, x);
+  if(x < gridSize && y < gridSize && x >= 0 && y >= 0){
+    if(grid.mineState[y][x] === 1){
+      return 0;
+    }
+    if(grid.mineNeighbour[y][x] === 0){
+      grid.mineState[y][x] = 1;
+    }
+    else{
+      grid.mineState[y][x] = 1;
+      return 0;
+    }
+    autofillZero(y+1,x+1);
+    autofillZero(y+1,x);
+    autofillZero(y+1,x-1);
+    autofillZero(y,x+1);
+    autofillZero(y,x-1);
+    autofillZero(y-1,x+1);
+    autofillZero(y-1,x);
+    autofillZero(y-1,x-1);
   }
 }
 
@@ -244,7 +305,8 @@ function displayGrid() {
   for (let y = 0; y < grid.minePlace.length; y++) {
     for (let x = 0; x < grid.minePlace[y].length; x++) {
       if (grid.minePlace[y][x] === 1) {
-        fill("black");
+        fill("white");
+        // black later
       }
       else {
         fill("white");
