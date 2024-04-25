@@ -3,17 +3,22 @@
 // Apr 9, 2024
 
 // I beilive I have the most optimal algorism to fill in the 0s
+// prompt
+// resize the font properly
+// switch music
 
 let grid = {
   minePlace: [],
   mineNeighbour: [],
   mineState: [],
 };
-let cellSize;
-let gridCol = 30;
-let gridRow = 16;
+
+let hansonScore;
 let gridSize;
-let mineNumber = 99;
+let promptInput;
+let gridCol;
+let gridRow;
+let mineNumber;
 let time;
 let colors = ["pink","blue","green","red","purple","brown","aqua","black","grey"];
 let toggleStyle = "normal";
@@ -29,7 +34,34 @@ function preload() {
 
 function setup() {
   //make the canvas the largest square that you can...
-
+  promptInput = prompt("h: hard m: mid, e: easy, c: custum", "h");
+  if (promptInput === "h"){
+    gridCol = 30;
+    gridRow = 16;
+    mineNumber = 99;
+    hansonScore = 57;
+  }
+  else if (promptInput === "m"){
+    gridCol = 16;
+    gridRow = 16;
+    mineNumber = 40;
+    hansonScore = 21;
+  }
+  else if (promptInput === "e"){
+    gridCol = 9;
+    gridRow = 9;
+    mineNumber = 10;
+    hansonScore = 2;
+  }
+  else if (promptInput[0] === "c"){
+    promptInput = prompt("row");
+    gridCol = promptInput;
+    promptInput = prompt("col");
+    gridRow = promptInput;
+    promptInput = prompt("mine");
+    mineNumber = promptInput;
+    hansonScore = 0.1;
+  }
   if (windowWidth / gridCol < windowHeight / gridRow) {
     createCanvas(windowWidth, windowWidth / gridCol * gridRow);
     gridSize = width / gridCol;
@@ -45,8 +77,6 @@ function setup() {
   grid.mineState = generateEmptyGrid(gridCol, gridRow);
   //update neibour array
   grid.minePlace = updateGridNeighbour();
-
-  cellSize = gridSize;
 
   for(let size = 10; textWidth("__") < gridSize; size++){
     textSize(size);
@@ -66,7 +96,10 @@ function windowResized() {
     gridSize = height / gridRow;
   }
 
-  cellSize = gridSize;
+  for(let size = 10; textWidth("__") < gridSize; size++){
+    textSize(size);
+    sizeOfText = size;
+  }
 }
 
 function draw() {
@@ -89,7 +122,7 @@ function draw() {
     background("red");
     textAlign(CENTER,CENTER);
     fill("green");
-    text("Hanson win because 57 < " + floor(time), width/2, height/2);
+    text("Hanson win: " + hansonScore + " < " + floor(time), width/2, height/2);
   }
 
 }
@@ -104,12 +137,13 @@ function keyPressed() {
     grid.minePlace = updateGridNeighbour();
     state = "game";
     time = millis();
+    firstClick = true;
   }
   if (state === "start screen" || state === "death") {
-    state = "game";
-    if(state === "start"){
+    if(state === "start screen"){
       time = millis();
     }
+    state = "game";
   }
   else{
     if (key === "r") {
@@ -196,11 +230,11 @@ function updateGrid() {
       if (grid.minePlace[y][x] === 1) {
         //currently alive
         if (grid.mineState[y][x] === 1) {
-          fill("red");
+          fill("black");
           textSize(sizeOfText);
           textAlign(CENTER,CENTER);
           text(
-            grid.mineNeighbour[y][x],
+            "M",
             (x + 0.5) * gridSize,
             (y + 1 - 0.5) * gridSize
           );
@@ -236,8 +270,8 @@ function mousePressed() {
     // start a new game maby
   }
   if (state === "game"){
-    let x = Math.floor(mouseX / cellSize);
-    let y = Math.floor(mouseY / cellSize);
+    let x = Math.floor(mouseX / gridSize);
+    let y = Math.floor(mouseY / gridSize);
 
     if (toggleStyle === "normal") {
       while (firstClick){
@@ -253,14 +287,13 @@ function mousePressed() {
           grid.minePlace = updateGridNeighbour();
         }
       }
-      grid.mineState[y][x] = 1;
-      if (grid.minePlace[y][x] === 1){
+      if (grid.minePlace[y][x] === 1 && grid.mineState[y][x] === 0){
         state = "death";
       }
       if (grid.mineNeighbour[y][x] === 0){
-        grid.mineState[y][x] = 0;
         autofillZero(y,x);
       }
+      grid.mineState[y][x] = 1;
     }
     else {
       //toggle self
@@ -323,7 +356,7 @@ function displayGrid() {
       else {
         fill("white");
       }
-      square(x * cellSize, y * cellSize, cellSize);
+      square(x * gridSize, y * gridSize, gridSize);
     }
   }
 }
