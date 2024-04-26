@@ -172,9 +172,15 @@ function keyPressed() {
     }
 
     if (key === " ") {
-      grid.minePlace = updateGrid();
+      for (let y = 0; y < gridRow; y++) {
+        for (let x = 0; x < gridCol; x++) {
+          if (grid.minePlace[y][x] === 1){
+            grid.mineState[y][x] = 1;
+          }
+        }
+      }
     }
-
+    
     if (key === "a") {
       isAutoPlayOn = !isAutoPlayOn;
     }
