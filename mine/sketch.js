@@ -32,6 +32,30 @@ function preload() {
   // gosperGun = loadJSON("gosper.json");
 }
 
+
+// function loadImage5(url) {
+//   return new  Promise(resolve => {
+//         const image = new Image();
+//         image.addEventListener('load', () => {
+//             resolve(image);
+//         });
+//         image.src = url; 
+//     });
+// }
+
+// function loadSong(){
+//   const canvas = document.getElementById('screen');
+//   const context = canvas.getContext('2d');
+
+//   context.fillRect(0,0,50,50);
+
+//   loadImage5('/img/tiles.png')
+//   .then(image=>{
+//   context.drawImage(image,0,0);  // the function LoadImage returns a Promise with image object(which is  a constant)
+//   // as parameter and if the promise is fulfilled then the image is drawn. 
+//   });
+// }
+
 function setup() {
   //make the canvas the largest square that you can...
   promptInput = prompt("h: hard m: mid, e: easy, c: custum", "h");
@@ -180,7 +204,7 @@ function keyPressed() {
         }
       }
     }
-    
+
     if (key === "a") {
       isAutoPlayOn = !isAutoPlayOn;
     }
