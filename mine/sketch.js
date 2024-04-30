@@ -27,6 +27,8 @@ let gosperGun;
 let state = "start screen";
 let sizeOfText = 0;
 let firstClick = true;
+let town;
+
 
 function preload() {
   town = loadSound("assets/music/townTheme.mp3");
