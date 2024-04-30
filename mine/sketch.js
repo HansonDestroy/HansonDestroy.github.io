@@ -29,7 +29,7 @@ let sizeOfText = 0;
 let firstClick = true;
 
 function preload() {
-  // gosperGun = loadJSON("gosper.json");
+  town = loadSound("assets/music/townTheme.mp3");
 }
 
 
@@ -180,6 +180,10 @@ function keyPressed() {
   if (state === "start screen" || state === "death") {
     // when key is pressed during start and death state
     if(state === "start screen"){
+      print("music")
+      town.jump(0);
+      town.play();
+      town.setLoop(true);
       time = millis();
     }
     state = "game";
