@@ -43,7 +43,7 @@ function preload() {
 //     });
 // }
 
-// function loadSong(){
+// function loadImage(){
 //   const canvas = document.getElementById('screen');
 //   const context = canvas.getContext('2d');
 
@@ -60,48 +60,55 @@ function setup() {
   //make the canvas the largest square that you can...
   promptInput = prompt("h: hard m: mid, e: easy, c: custum", "h");
   if (promptInput === "h"){
+    // hard mode setup
     gridCol = 30;
     gridRow = 16;
     mineNumber = 99;
     hansonScore = 57;
   }
   else if (promptInput === "m"){
+    // medium mode setup
     gridCol = 16;
     gridRow = 16;
     mineNumber = 40;
     hansonScore = 21;
   }
   else if (promptInput === "e"){
+    // easy mode setup
     gridCol = 9;
     gridRow = 9;
     mineNumber = 10;
     hansonScore = 2;
   }
   else if (promptInput[0] === "c"){
+    // custum mode setup
     promptInput = prompt("row");
     gridCol = promptInput;
     promptInput = prompt("col");
     gridRow = promptInput;
     promptInput = prompt("mine");
     mineNumber = promptInput;
-    hansonScore = 0.1;
+    hansonScore = gridCol * gridRow / 16 / 0.3;
   }
   if (windowWidth / gridCol < windowHeight / gridRow) {
+    // when it is not wide enough
     createCanvas(windowWidth, windowWidth / gridCol * gridRow);
     gridSize = width / gridCol;
   }
   else {
+    // when it is not long enough
     createCanvas(windowHeight / gridRow * gridCol, windowHeight);
     gridSize = height / gridRow;
   }
 
-  //if randomizing the grid, do this:
+  //randomizing the grid
   grid.minePlace = generateRandomGrid(gridCol, gridRow, mineNumber);
-  //close initailly
+  //let the state be close initailly
   grid.mineState = generateEmptyGrid(gridCol, gridRow);
   //update neibour array
   grid.minePlace = updateGridNeighbour();
 
+  // adjust the font size to be the same as the gridSize
   for(let size = 10; textWidth("__") < gridSize; size++){
     textSize(size);
     sizeOfText = size;
@@ -109,7 +116,7 @@ function setup() {
 }
 
 function windowResized() {
-  //make the canvas the largest square that you can...
+  //make the canvas the largest square that you can when it is resized
 
   if (windowWidth / gridCol < windowHeight / gridRow) {
     createCanvas(windowWidth, windowWidth / gridCol * gridRow);
@@ -120,6 +127,7 @@ function windowResized() {
     gridSize = height / gridRow;
   }
 
+  // adjust the font size to be the same as the gridSize
   for(let size = 10; textWidth("__") < gridSize; size++){
     textSize(size);
     sizeOfText = size;
@@ -127,21 +135,25 @@ function windowResized() {
 }
 
 function draw() {
+  // start screen
   if (state === "start screen"){
     background(100);
   }
+  // display the numbers on the grid
   if (state === "game"){
     displayGrid();
     if (isAutoPlayOn) {
       grid.minePlace = updateGrid();
     }
   }
+  // write death
   if (state === "death"){
     background("red");
     textAlign(CENTER,CENTER);
     fill("green");
     text("death", width/2, height/2);
   }
+  // write win
   if (state === "win"){
     background("red");
     textAlign(CENTER,CENTER);
@@ -153,9 +165,11 @@ function draw() {
 
 function keyPressed() {
   if (state === "win"){
-    //if randomizing the grid, do this:
+    // when key is pressed during win state
+    //initialize
+    //randomizing the grid
     grid.minePlace = generateRandomGrid(gridCol, gridRow, mineNumber);
-    //close initailly
+    //set the state to close
     grid.mineState = generateEmptyGrid(gridCol, gridRow);
     //update neibour array
     grid.minePlace = updateGridNeighbour();
@@ -164,12 +178,14 @@ function keyPressed() {
     firstClick = true;
   }
   if (state === "start screen" || state === "death") {
+    // when key is pressed during start and death state
     if(state === "start screen"){
       time = millis();
     }
     state = "game";
   }
   else{
+    // new grid 
     if (key === "r") {
       //if randomizing the grid, do this:
       grid.minePlace = generateRandomGrid(gridCol, gridRow, mineNumber);
@@ -177,11 +193,14 @@ function keyPressed() {
       grid.mineState = generateEmptyGrid(gridCol, gridRow);
       //update neibour array
       grid.minePlace = updateGridNeighbour();
+      time = millis();
+      firstClick = true;
     }
-
+    // empty grid
     if (key === "e") {
       grid.minePlace = generateEmptyGrid(gridCol, gridRow);
     }
+    
 
     if (key === "n") {
       toggleStyle = "neighbours";
@@ -195,6 +214,7 @@ function keyPressed() {
       toggleStyle = "normal";
     }
 
+    // god mode mine auto appear
     if (key === " ") {
       for (let y = 0; y < gridRow; y++) {
         for (let x = 0; x < gridCol; x++) {
@@ -251,7 +271,8 @@ function updateGridNeighbour() {
 }
 
 function updateGrid() {
-  //need a second array, so I don't mess with the grid while counting neighbours
+  //display nothing if the state is colsed
+  //display the number or mine if the state is open at the right place
   //look at every cell
   let safes = 0;
   for (let y = 0; y < gridRow; y++) {
@@ -286,7 +307,7 @@ function updateGrid() {
       }
     }
   }
-  
+  // check if the game is over when enough numbers are digged out
   if (gridRow * gridCol - mineNumber === safes){
     state = "win";
     time = (millis() - time) / 1000;
@@ -317,12 +338,18 @@ function mousePressed() {
           grid.minePlace = updateGridNeighbour();
         }
       }
+
+      // if step on mine and mine is closed die
       if (grid.minePlace[y][x] === 1 && grid.mineState[y][x] === 0){
         state = "death";
       }
+
+      // if 0 then auto fill
       if (grid.mineNeighbour[y][x] === 0){
         autofillZero(y,x);
       }
+
+      // fill the cell
       grid.mineState[y][x] = 1;
     }
     else {
@@ -341,6 +368,7 @@ function mousePressed() {
 }
 
 function autofillZero(y,x){
+  // if the grid is  in range or if it is aready filled then exit the function and if the grid is not filled then fill it
   if(x < gridCol && y < gridRow && x >= 0 && y >= 0){
     if(grid.mineState[y][x] === 1){
       return 0;
@@ -352,6 +380,7 @@ function autofillZero(y,x){
       grid.mineState[y][x] = 1;
       return 0;
     }
+    // fill the grid around it
     autofillZero(y+1,x+1);
     autofillZero(y+1,x);
     autofillZero(y+1,x-1);
@@ -381,10 +410,11 @@ function displayGrid() {
     for (let x = 0; x < grid.minePlace[y].length; x++) {
       if (grid.minePlace[y][x] === 1) {
         fill("white");
-        // black later
+        // if the state is open the fill white but I might change this later
       }
       else {
         fill("white");
+        // if the state is closed the fill white
       }
       square(x * gridSize, y * gridSize, gridSize);
     }
@@ -392,12 +422,15 @@ function displayGrid() {
 }
 
 function generateRandomGrid(cols, rows, mineNumber) {
+  // fist have a empty grid
   let emptyArray = generateEmptyGrid(cols, rows);
 
+  // make sure it is possible
   if (rows * cols < mineNumber) {
     return emptyArray;
   }
 
+  // randomly but mines in if possible
   for (let mine = 0; mine < mineNumber; mine++) {
     let shouldRepeat = true;
     while (shouldRepeat) {
@@ -414,6 +447,7 @@ function generateRandomGrid(cols, rows, mineNumber) {
 }
 
 function generateEmptyGrid(cols, rows) {
+  //create empty matrix
   let emptyArray = [];
   for (let y = 0; y < rows; y++) {
     emptyArray.push([]);
