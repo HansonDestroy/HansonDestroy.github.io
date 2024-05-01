@@ -182,7 +182,7 @@ function keyPressed() {
   if (state === "start screen" || state === "death") {
     // when key is pressed during start and death state
     if(state === "start screen"){
-      print("music")
+      print("music");
       town.jump(0);
       town.play();
       town.setLoop(true);

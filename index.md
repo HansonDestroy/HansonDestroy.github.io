@@ -9,6 +9,7 @@
   - [backup 2](backup2)
   - [bubble](bubble)
   - [2d](2d)
+  - [walker OOPS](walker)
 ## Projects
   - [Interactive scene](scene)
   - [Object and Array](objectarray)
