@@ -6,11 +6,11 @@
 // - describe what you did to take this project "above and beyond"
 
 class Walker {
-  constructor(x, y){
+  constructor(x, y, color){
     this.x = x;
     this.y = y;
     this.stepSize = 10;
-    this.color = "red";
+    this.color = color;
     this.radius = 5;
   }
 
@@ -36,19 +36,21 @@ class Walker {
   }
 }
 
-let maram;
-let griffin;
+let theWalkers = [];
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  maram = new Walker(width/2,height/2);
-  griffin = new Walker(width/2,height/2);
-  griffin.color = "green";
 }
 
 function draw() {
-  maram.move();
-  maram.display();
-  griffin.move();
-  griffin.display();
+  for (let someWalker of theWalkers) {
+    someWalker.move();
+    someWalker.display();
+  }
+}
+
+function mousePressed(){
+  let myWalker = new Walker(mouseX,mouseY,color(random(255),random(255),random(255)));
+  theWalkers.push(myWalker);
 }
