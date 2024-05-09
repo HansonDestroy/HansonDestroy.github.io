@@ -98,7 +98,7 @@ class MovingPoint {
       if (this !== otherPoint){
         let pointDistance = dist(this.x,this.y,otherPoint.x,otherPoint.y);
         if (pointDistance < this.reach){
-          stroke(50)
+          stroke(50);
           line(this.x, this.y, otherPoint.x, otherPoint.y);
         }
         

@@ -29,9 +29,29 @@ let sizeOfText = 0;
 let firstClick = true;
 let town;
 
+let canLoad = false;
+let megalovania;
+let theLoadSoundTime = 100;
 
-function preload() {
-  town = loadSound("assets/music/townTheme.mp3");
+function preloadButNo() {
+  let promise = new Promise(
+    function (resolve, reject) {
+      if (canLoad){
+        town = loadSound("assets/music/townTheme.mp3");
+        megalovania =loadSound("assets/music/Megalovania.mp3");
+        print("hello");
+        resolve();
+      }
+      else{
+        reject();
+      }
+    });
+  
+  promise.then(function () {
+    console.log("Success, You are a GEEK");
+  }).catch(function () {
+    console.log("Some error has occurred");
+  });
 }
 
 
@@ -61,6 +81,8 @@ function preload() {
 function setup() {
   //make the canvas the largest square that you can...
   promptInput = prompt("h: hard m: mid, e: easy, c: custum", "h");
+  canLoad = true;
+  preloadButNo();
   if (promptInput === "h"){
     // hard mode setup
     gridCol = 30;
