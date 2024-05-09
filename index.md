@@ -10,6 +10,7 @@
   - [bubble](bubble)
   - [2d](2d)
   - [walker OOPS](walker)
+  - [nodes OOPS](nodes)
 ## Projects
   - [Interactive scene](scene)
   - [Object and Array](objectarray)
