@@ -28,7 +28,7 @@ function draw() {
 		monster.y = monster.y + 2;
 	}
 	//monster.moveTowards(mouse)
-	player.x = monster.x
+	zplayer.x = monster.x
 	player.y = monster.y
 	if (kb.presses(2)) {
 		monster.scale = monster.scale / 2.2;
