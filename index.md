@@ -11,6 +11,8 @@
   - [2d](2d)
   - [walker OOPS](walker)
   - [nodes OOPS](nodes)
+  - [recursive](recursive)
+  - [s tri](triangle)
 ## Projects
   - [Interactive scene](scene)
   - [Object and Array](objectarray)
